@@ -1,0 +1,14 @@
+{
+	"geode": "3.2.0",
+	"gd": {
+		"win": "2.206",
+		"android": "2.206",
+		"mac": "2.206",
+		"ios": "2.206"
+	},
+	"id": "fullsound.level_comparison",
+	"name": "Level Comparison",
+	"version": "v0.0.1-alpha",
+	"developer": "FullSound",
+	"description": "Level Comparison"
+}
