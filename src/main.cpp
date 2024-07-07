@@ -31,15 +31,15 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
     }
 
     void onButton(CCObject*) {
-		gd::string levelName = this->m_level->m_levelName;
-        gd::string levelString = this->m_level->m_levelString;
-		gd::string levelStringNormal = ZipUtils::decompressString(levelString, false, 0);
+		std::string levelName = this->m_level->m_levelName;
+        std::string levelString = this->m_level->m_levelString;
+		std::string levelStringNormal = ZipUtils::decompressString(levelString, false, 0);
 
-		gd::vector<gd::string> levelStringSplit = splitString(levelStringNormal, ";");
+		std::vector<std::string> levelStringSplit = splitString(levelStringNormal, ";");
 		std::string firstElement = levelStringSplit.front();
 		levelStringSplit.erase(levelStringSplit.begin());
 
-		for (gd::string& str : levelStringSplit) {
+		for (std::string& str : levelStringSplit) {
 			// log::debug("{}", str);
 			std::vector<std::string> splitStrings = splitString(str, ",");
 			std::vector<std::vector<std::string>> splitStringsPairs;
@@ -58,14 +58,14 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
 
 		levelStringSplit.erase(std::remove(levelStringSplit.begin(), levelStringSplit.end(), ""), levelStringSplit.end());
 
-		gd::string levelStringFinal = firstElement;
+		std::string levelStringFinal = firstElement;
 
 		for (std::string& str : levelStringSplit) {
-			levelStringFinal += ";" + str;
+			levelStringFinal = levelStringFinal + ";" + str;
 		}
-		levelStringFinal += ";";
+		levelStringFinal = levelStringFinal + ";";
 
-		gd::string levelStringCompressed = ZipUtils::compressString(levelStringFinal, false, 0);
+		std::string levelStringCompressed = ZipUtils::compressString(levelStringFinal, false, 0);
 		
 		FLAlertLayer::create(
 			"Level Comparison",
