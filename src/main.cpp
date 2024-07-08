@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
+#include <Geode/binding/LevelInfoLayer.hpp>
 #include "objects.hpp"
 
 using namespace geode::prelude;
