@@ -1,100 +1,101 @@
-/**
- * Include the Geode headers.
- */
+#include <string>
+#include <fstream>
+#include <vector>
+#include <algorithm>
 #include <Geode/Geode.hpp>
+#include <Geode/modify/LevelInfoLayer.hpp>
+#include <Geode/binding/LevelInfoLayer.hpp>
+#include "objects.hpp"
 
-/**
- * Brings cocos2d and all Geode namespaces to the current scope.
- */
 using namespace geode::prelude;
 
-/**
- * `$modify` lets you extend and modify GD's classes.
- * To hook a function in Geode, simply $modify the class
- * and write a new function definition with the signature of
- * the function you want to hook.
- *
- * Here we use the overloaded `$modify` macro to set our own class name,
- * so that we can use it for button callbacks.
- *
- * Notice the header being included, you *must* include the header for
- * the class you are modifying, or you will get a compile error.
- *
- * Another way you could do this is like this:
- *
- * struct MyMenuLayer : Modify<MyMenuLayer, MenuLayer> {};
- */
-#include <Geode/modify/MenuLayer.hpp>
-class $modify(MyMenuLayer, MenuLayer) {
-	/**
-	 * Typically classes in GD are initialized using the `init` function, (though not always!),
-	 * so here we use it to add our own button to the bottom menu.
-	 *
-	 * Note that for all hooks, your signature has to *match exactly*,
-	 * `void init()` would not place a hook!
-	*/
-	bool init() {
-		/**
-		 * We call the original init function so that the
-		 * original class is properly initialized.
-		 */
-		if (!MenuLayer::init()) {
-			return false;
+std::vector<std::string> splitString(const std::string& s, const std::string& delimiter);
+
+
+class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
+    bool init(GJGameLevel* level, bool challenge) {
+        if (!LevelInfoLayer::init(level, challenge))
+            return false;
+        
+        auto menu = this->getChildByID("left-side-menu");
+        if (menu) {
+            auto btn = CCMenuItemSpriteExtra::create(
+                CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png"),
+                this, menu_selector(MakeLevelLayoutLayer::onButton)
+            );
+            btn->setID("export-button"_spr);
+            menu->addChild(btn);
+            menu->updateLayout();
+        }
+
+        return true;
+    }
+
+    void onButton(CCObject*) {
+		std::string levelName = this->m_level->m_levelName;
+        std::string levelString = this->m_level->m_levelString;
+		std::string levelStringNormal = ZipUtils::decompressString(levelString, false, 0);
+
+		std::vector<std::string> levelStringSplit = splitString(levelStringNormal, ";");
+		std::string firstElement = levelStringSplit.front();
+		levelStringSplit.erase(levelStringSplit.begin());
+
+		for (std::string& str : levelStringSplit) {
+			// log::debug("{}", str);
+			std::vector<std::string> splitStrings = splitString(str, ",");
+			std::vector<std::vector<std::string>> splitStringsPairs;
+			for (int i = 0; i < splitStrings.size() - 1; i += 2) {
+				splitStringsPairs.push_back({ splitStrings[i], splitStrings[i + 1] });
+			}
+			for (std::vector<std::string>& pair : splitStringsPairs) {
+				// log::debug("Pair: {}, {}", pair[0], pair[1]);
+				if (pair[0] == "1") {
+					if (std::find(objects.begin(), objects.end(), std::stoi(pair[1])) == objects.end()) {
+						str = "";
+					}
+				}
+			}
 		}
 
-		/**
-		 * You can use methods from the `geode::log` namespace to log messages to the console,
-		 * being useful for debugging and such. See this page for more info about logging:
-		 * https://docs.geode-sdk.org/tutorials/logging
-		*/
-		log::debug("Hello from my MenuLayer::init hook! This layer has {} children.", this->getChildrenCount());
+		levelStringSplit.erase(std::remove(levelStringSplit.begin(), levelStringSplit.end(), ""), levelStringSplit.end());
 
-		/**
-		 * See this page for more info about buttons
-		 * https://docs.geode-sdk.org/tutorials/buttons
-		*/
-		auto myButton = CCMenuItemSpriteExtra::create(
-			CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png"),
-			this,
-			/**
-			 * Here we use the name we set earlier for our modify class.
-			*/
-			menu_selector(MyMenuLayer::onMyButton)
-		);
+		std::string levelStringFinal = firstElement;
 
-		/**
-		 * Here we access the `bottom-menu` node by its ID, and add our button to it.
-		 * Node IDs are a Geode feature, see this page for more info about it:
-		 * https://docs.geode-sdk.org/tutorials/nodetree
-		*/
-		auto menu = this->getChildByID("bottom-menu");
-		menu->addChild(myButton);
+		for (std::string& str : levelStringSplit) {
+			levelStringFinal = levelStringFinal + ";" + str;
+		}
+		levelStringFinal = levelStringFinal + ";";
 
-		/**
-		 * The `_spr` string literal operator just prefixes the string with
-		 * your mod id followed by a slash. This is good practice for setting your own node ids.
-		*/
-		myButton->setID("my-button"_spr);
+		std::string levelStringCompressed = ZipUtils::compressString(levelStringFinal, false, 0);
+		
+		FLAlertLayer::create(
+			"Level Comparison",
+			std::string("Successfully created layout of ") + levelName.c_str(),
+			"OK"
+		)->show();
+		// log::info("{}", levelStringNormal);
+		// log::info("{}", levelStringFinal);
 
-		/**
-		 * We update the layout of the menu to ensure that our button is properly placed.
-		 * This is yet another Geode feature, see this page for more info about it:
-		 * https://docs.geode-sdk.org/tutorials/layouts
-		*/
-		menu->updateLayout();
 
-		/**
-		 * We return `true` to indicate that the class was properly initialized.
-		 */
-		return true;
-	}
+		// create new level
+        GameLevelManager *gameLevelManager = GameLevelManager::sharedState();
+        GJGameLevel* newLevel = gameLevelManager->createNewLevel();
+        newLevel->m_levelName = "TestNewName";
+        newLevel->m_levelString = levelStringFinal;
+    }
 
-	/**
-	 * This is the callback function for the button we created earlier.
-	 * The signature for button callbacks must always be the same,
-	 * return type `void` and taking a `CCObject*`.
-	*/
-	void onMyButton(CCObject*) {
-		FLAlertLayer::create("Geode", "Hello from my custom mod!", "OK")->show();
-	}
 };
+
+std::vector<std::string> splitString(const std::string& s, const std::string& delimiter) {
+	std::vector<std::string> splitStrings;
+	size_t pos = 0;
+	std::string token;
+	std::string str = s;
+	while ((pos = str.find(delimiter)) != std::string::npos) {
+		token = str.substr(0, pos);
+		splitStrings.push_back(token);
+		str.erase(0, pos + delimiter.length());
+	}
+	splitStrings.push_back(str);
+	return splitStrings;
+}
