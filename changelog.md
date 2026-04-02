@@ -2,6 +2,9 @@
 - Minor update
 Features:
     - iOS support
+    - Added saw rotation info button
+    - Set Level ID placeholder to "Level ID" instead of "0"
+    - Set initial Level ID to blank instead of "0"
 Bugfixes:
     - Fixed 1.9 objects not adapting to new color
 

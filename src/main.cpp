@@ -86,13 +86,13 @@ public:
 		idLabel->setScale(0.8);
         panel->addChild(idLabel);
 
-        auto idInput = TextInput::create(120.f, "0", "bigFont.fnt");
+        auto idInput = TextInput::create(120.f, "Level ID", "bigFont.fnt");
 		idInput->setMaxCharCount(10);
 		idInput->setFilter("0123456789");
 		idInput->setPosition({ 80.f, 185.f });
 		idInput->setEnabled(true);
 		idInput->setID("level-id-input"_spr);
-        idInput->setString(std::to_string(targetLevelID).c_str());
+		idInput->setString(targetLevelID != 0 ? std::to_string(targetLevelID).c_str() : "");
         idInput->setDelegate(this);
         panel->addChild(idInput);
 		
@@ -150,6 +150,17 @@ public:
         speedText->setPosition({ 80.f, 155.f });
 		speedText->setScale(0.8);
         panel->addChild(speedText);
+
+		auto sawInfoSprite = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
+		sawInfoSprite->setScale(0.5f);
+
+		auto sawRotationInfo = CCMenuItemSpriteExtra::create(
+			sawInfoSprite,
+			this,
+			menu_selector(ComparisonMenu::onSawRotationInfo)
+		);
+		sawRotationInfo->setPosition({ 155.f, 160.f });
+		menu->addChild(sawRotationInfo);
 
         auto sawSpeedInput = TextInput::create(80.f, "0", "bigFont.fnt");
 		sawSpeedInput->setMaxCharCount(3);
@@ -234,6 +245,14 @@ public:
 		)->show();
 	}
 
+	void onSawRotationInfo(CCObject*) {
+		FLAlertLayer::create(
+			"Saw Rotation",
+			"Sets the rotation speed of <cy>saw blade objects</c> in the comparison. Set to <cg>0</c> to disable saw rotation.",
+			"OK"
+		)->show();
+	}
+
 	void onComingSoonInfo(CCObject*) {
 		FLAlertLayer::create(
 			"Info",
@@ -251,6 +270,15 @@ public:
 	}
 
     void onCreate(CCObject*) {
+		if (targetLevelID == 0) {
+			FLAlertLayer::create(
+				"Missing Level ID",
+				"Please enter a valid <cy>Level ID</c> before creating a comparison.",
+				"OK"
+			)->show();
+			return;
+		}
+
 		auto mod = Mod::get();
 		mod->setSavedValue("target-level-id", targetLevelID);
 		mod->setSavedValue("is-buffed", isBuffed);
@@ -415,8 +443,6 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 				int propID = stoi(pair[0]);
 
 				if (propID == 1) { // id
-					if (pair[1] == "351") log::info("{}", splitStringsPairs);
-					
 					if (std::find(objects.begin(), objects.end(), stoi(pair[1])) == objects.end()) { // Check if object is decoration
 						isDecoration = true;
 						objectStr = "";
