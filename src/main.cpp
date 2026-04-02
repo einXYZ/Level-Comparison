@@ -19,6 +19,8 @@ using namespace cocos2d::extension;
 std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const ComparisonConfig& config);
 std::vector<std::string> splitString(const std::string& s, const std::string& delimiter, bool skipEmpty);
 std::string joinString(const std::vector<std::string>& elems, const std::string& delimiter);
+int stoi(std::string& str);
+int stof(std::string& str);
 
 class ComparisonMenu : public FLAlertLayer, public TextInputDelegate {
 public:
@@ -285,11 +287,11 @@ public:
 		std::string text = input->getString();
 
 		if (input == levelIDNode) {
-			targetLevelID = text.empty() ? 0 : std::stoi(text);
+			targetLevelID = text.empty() ? 0 : stoi(text);
 		}
 		else if (input == sawSpeedNode) {
 			try {
-				sawRotationSpeed = (text.empty() || text == "-") ? 0.f : std::stof(text);
+				sawRotationSpeed = (text.empty() || text == "-") ? 0.f : stof(text);
 			} catch (...) {
 				sawRotationSpeed = 0.f;
 			}
@@ -410,15 +412,17 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			// log::info("Object before: {}", objectStr);
 
 			for (std::vector<std::string>& pair : splitStringsPairs) {
-				int propID = std::stoi(pair[0]);
+				int propID = stoi(pair[0]);
 
 				if (propID == 1) { // id
-					if (std::find(objects.begin(), objects.end(), std::stoi(pair[1])) == objects.end()) { // Check if object is decoration
+					if (pair[1] == "351") log::info("{}", splitStringsPairs);
+					
+					if (std::find(objects.begin(), objects.end(), stoi(pair[1])) == objects.end()) { // Check if object is decoration
 						isDecoration = true;
 						objectStr = "";
 						break;
 					} else {
-						int objID = std::stoi(pair[1]);
+						int objID = stoi(pair[1]);
 
 						for (const auto& objPair : blackObjects) {
 							if (objID == objPair[0]) {
@@ -436,6 +440,8 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 				if (isDecoration) break;
 
 				switch (propID) {
+					case 19: // delete 1.9 color
+						continue;
 					case 20: // editor layer 1
 						hasLayer1 = true;
 						first ? newObjectStr += "20,1," : newObjectStr += "20,2,";
@@ -582,4 +588,12 @@ std::string joinString(const std::vector<std::string>& elems, const std::string&
         ss << elems[i];
     }
     return ss.str();
+}
+
+int stoi(std::string& str) {
+	return utils::numFromString<int>(str).unwrapOr(0);
+}
+
+int stof(std::string& str) {
+	return utils::numFromString<float>(str).unwrapOr(0);
 }
