@@ -6,14 +6,17 @@ Create your own level comparisons by using the menu button on the level page!
 - Set ID of level to be compared to
 - Select buffed/nerfed role
 - Set saw rotation speed
-- Create the level
+- Create the level; The mod automatically:
+    - Removes all deco
+    - Divide the two levels to layers 1 and 2
+    - Adjust all color channels
+    - Replace black objects with their colored version
 
 ## Upcoming features
 - Toggle remapping groups and triggers (until then use build helper)
 - Toggle hide invisible
 - Toggle replace black objects
 - Toggle show D-blocks etc.
-- Multi platform support
 
 ## How to use
 - Go to any online level
