@@ -8,7 +8,7 @@
 	},
 	"id": "fullsound.level-comparison",
 	"name": "Level Comparison",
-	"version": "v0.2.1",
+	"version": "v0.2.11",
 	"developer": "FullSound",
 	"description": "Tool for automatic level comparison creating",
 	"resources": {
