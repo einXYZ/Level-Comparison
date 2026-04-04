@@ -22,7 +22,7 @@ std::string joinString(const std::vector<std::string>& elems, const std::string&
 int stoi(std::string& str);
 int stof(std::string& str);
 
-class ComparisonMenu : public FLAlertLayer, public TextInputDelegate {
+class ComparisonMenu : public geode::Popup {
 public:
 	std::function<void(
 		int targetLevelID,
@@ -38,8 +38,6 @@ public:
     CCMenuItemToggler* buffedToggle = nullptr;
     CCMenuItemToggler* nerfedToggle = nullptr;
 	CCMenuItemToggler* remapToggle = nullptr;
-	CCTextInputNode* levelIDNode = nullptr;
-	CCTextInputNode* sawSpeedNode = nullptr;
 
 
     static ComparisonMenu* create(std::function<void(int, bool, float)> onCreate) {
@@ -53,9 +51,8 @@ public:
 		return nullptr;
 	}
 
-
     bool init() override {
-        if (!FLAlertLayer::init(75)) return false;
+        if (!Popup::init(360.f, 260.f)) return false;
 		this->setTouchEnabled(true);
 		this->setKeypadEnabled(true);
         auto winSize = CCDirector::sharedDirector()->getWinSize();
@@ -65,11 +62,10 @@ public:
         isBuffed = mod->getSavedValue<bool>("is-buffed", false);
         sawRotationSpeed = mod->getSavedValue<float>("saw-rotation-speed", 0.f);
 
-        auto panel = CCScale9Sprite::create("GJ_square01.png", {0.0f, 0.0f, 80.0f, 80.0f});
+        auto panel = CCLayerColor::create({ 0, 0, 0, 0 });
         panel->setContentSize({ 360.f, 260.f });
-        panel->setPosition(winSize / 2);
 		panel->setID("create-comparison-background"_spr);
-        this->m_mainLayer->addChild(panel);
+        this->m_mainLayer->addChildAtPosition(panel, Anchor::BottomLeft);
 
         auto menu = CCMenu::create();
         menu->setPosition({ 0, 0 });
@@ -93,13 +89,12 @@ public:
 		idInput->setEnabled(true);
 		idInput->setID("level-id-input"_spr);
 		idInput->setString(targetLevelID != 0 ? std::to_string(targetLevelID).c_str() : "");
-        idInput->setDelegate(this);
-        panel->addChild(idInput);
+		idInput->setCallback([this](std::string const& text) {
+			targetLevelID = text.empty() ? 0 : stoi(const_cast<std::string&>(text));
+		});
+		panel->addChild(idInput);
 		
-		levelIDNode = idInput->getInputNode();
-		levelIDNode->setDelegate(this);
-
-        nerfedToggle = CCMenuItemToggler::createWithStandardSprites(
+		nerfedToggle = CCMenuItemToggler::createWithStandardSprites(
 			this,
 			menu_selector(ComparisonMenu::onNerfed),
 			0.8f
@@ -169,19 +164,20 @@ public:
 		sawSpeedInput->setEnabled(true);
 		sawSpeedInput->setID("saw-speed-input"_spr);
         sawSpeedInput->setString(std::to_string(static_cast<int>(sawRotationSpeed)).c_str());
-        sawSpeedInput->setDelegate(this);
+		sawSpeedInput->setCallback([this](std::string const& text) {
+			if (text.empty() || text == "-") return;
+			if (text.find('-', 1) != std::string::npos) return;
+			sawRotationSpeed = stof(const_cast<std::string&>(text));
+		});
         panel->addChild(sawSpeedInput);
-	
-		sawSpeedNode = sawSpeedInput->getInputNode();
-		sawSpeedNode->setDelegate(this);
-
+		
 		// remap groups
-		remapToggle = CCMenuItemToggler::createWithStandardSprites(
+		/* remapToggle = CCMenuItemToggler::createWithStandardSprites(
 			this,
 			menu_selector(ComparisonMenu::onNerfed),
 			0.8f
 		);
-        /* remapToggle->setPosition({ 160.f, 130.f });
+        remapToggle->setPosition({ 160.f, 130.f });
 		remapToggle->setEnabled(false);
         menu->addChild(remapToggle);
 
@@ -308,22 +304,6 @@ public:
 		}
 
 		this->removeFromParentAndCleanup(true);
-	}
-
-
-	void textChanged(CCTextInputNode* input) override {
-		std::string text = input->getString();
-
-		if (input == levelIDNode) {
-			targetLevelID = text.empty() ? 0 : stoi(text);
-		}
-		else if (input == sawSpeedNode) {
-			try {
-				sawRotationSpeed = (text.empty() || text == "-") ? 0.f : stof(text);
-			} catch (...) {
-				sawRotationSpeed = 0.f;
-			}
-		}
 	}
 };
 

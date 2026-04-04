@@ -1,3 +1,6 @@
+# v0.2.1
+- Minor code update
+
 # v0.2.0
 - Minor update
 Features:
