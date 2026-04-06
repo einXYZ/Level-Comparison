@@ -1,3 +1,10 @@
+# v0.2.2
+- Bugfix Update
+Bugfixes:
+    - Fixed color channels not being configured correctly with pre 2.0/1.9 levels
+    - Fixed levels with main songs using Stereo Madness
+    - Fixed initial level length always showing Tiny
+
 # v0.2.11
 - Minor code update
 
