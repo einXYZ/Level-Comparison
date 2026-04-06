@@ -8,7 +8,7 @@
 	},
 	"id": "fullsound.level-comparison",
 	"name": "Level Comparison",
-	"version": "v0.3.0",
+	"version": "v0.3.1",
 	"developer": "FullSound",
 	"description": "Tool for automatic level comparison creating",
 	"resources": {
@@ -26,5 +26,8 @@
 	"links": {
 		"source": "https://github.com/einXYZ/Level-Comparison",
 		"community": "https://discord.com/users/470965127231832064"
+	},
+	"dependencies": {
+		"geode.node-ids": ">=1.23.0"
 	}
 }

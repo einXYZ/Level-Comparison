@@ -1,3 +1,6 @@
+# v0.3.1
+- Added Node IDs dependency
+
 # v0.3.0
 - Bugfix Update
 Bugfixes:
