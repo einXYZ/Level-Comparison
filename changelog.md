@@ -1,4 +1,4 @@
-# v0.2.2
+# v0.3.0
 - Bugfix Update
 Bugfixes:
     - Fixed color channels not being configured correctly with pre 2.0/1.9 levels
