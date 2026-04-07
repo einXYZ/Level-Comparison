@@ -2,9 +2,9 @@ struct ComparisonConfig {
     bool isBuffed;
     float sawSpeed;
     bool remapGroups;
+    bool unhideInvisible;
     
     //bool markDBlocks;
-    //bool mapTriggers;
 };
 
 std::vector<int> groupKeys = {

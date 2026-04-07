@@ -30,21 +30,24 @@ public:
 		int targetLevelID,
 		bool isBuffed,
 		float sawRotationSpeed,
-		bool remapGroups
+		bool remapGroups,
+		bool unhideInvisible
 	)> onCreateCallback;
 
     int targetLevelID = 0;
     bool isBuffed = false;
     float sawRotationSpeed = 0.f;
 	bool remapGroups = true;
+	bool unhideInvisible = true;
 
     CCLabelBMFont* speedLabel = nullptr;
     CCMenuItemToggler* buffedToggle = nullptr;
     CCMenuItemToggler* nerfedToggle = nullptr;
 	CCMenuItemToggler* remapToggle = nullptr;
+	CCMenuItemToggler* unhideToggle = nullptr;
 
 
-    static ComparisonMenu* create(std::function<void(int, bool, float, bool)> onCreate) {
+    static ComparisonMenu* create(std::function<void(int, bool, float, bool, bool)> onCreate) {
 		auto ret = new ComparisonMenu();
 		if (ret && ret->init()) {
 			ret->onCreateCallback = onCreate;
@@ -66,6 +69,7 @@ public:
         isBuffed = mod->getSavedValue<bool>("is-buffed", false);
         sawRotationSpeed = mod->getSavedValue<float>("saw-rotation-speed", 0.f);
 		remapGroups = mod->getSavedValue<bool>("remap-groups", true);
+		unhideInvisible = mod->getSavedValue<bool>("unhide-invisible", true);
 
         auto panel = CCLayerColor::create({ 0, 0, 0, 0 });
         panel->setContentSize({ 360.f, 260.f });
@@ -198,6 +202,29 @@ public:
 		remapInfo->setPosition({ 240.f, 150.f });
 		menu->addChild(remapInfo);
 
+		// unhide invisible
+		unhideToggle = CCMenuItemToggler::createWithStandardSprites(
+			this,
+			menu_selector(ComparisonMenu::onUnhide),
+			0.8f
+		);
+		unhideToggle->setPosition({ 270.f, 130.f });
+		unhideToggle->toggle(unhideInvisible);
+		menu->addChild(unhideToggle);
+
+		auto unhideLabel = CCLabelBMFont::create("Unhide\nobjects", "goldFont.fnt");
+		unhideLabel->setPosition({ 320.f, 130.f });
+		unhideLabel->setScale(0.7);
+		panel->addChild(unhideLabel);
+
+		auto unhideInfo = CCMenuItemSpriteExtra::create(
+			infoSprite,
+			this,
+			menu_selector(ComparisonMenu::onUnhideInfo)
+		);
+		unhideInfo->setPosition({ 350.f, 150.f });
+		menu->addChild(unhideInfo);
+
         // buttons
         auto abortBtn = CCMenuItemSpriteExtra::create(
             ButtonSprite::create("Abort"),
@@ -241,6 +268,10 @@ public:
 		log::info("{}", remapGroups);
 	}
 
+	void onUnhide(CCObject*) {
+		unhideInvisible = !unhideToggle->m_toggled;
+	}
+
 	void onBuffedNerfedInfo(CCObject*) {
 		FLAlertLayer::create(
 			"Info",
@@ -261,6 +292,14 @@ public:
 		FLAlertLayer::create(
 			"Remap Groups",
 			"<cy>Common Group IDs</c> used by both levels will be remapped so they don't interfere each other. <cg>Recommended</c> to be always checked.",
+			"OK"
+		)->show();
+	}
+
+	void onUnhideInfo(CCObject*) {
+		FLAlertLayer::create(
+			"Unhide Objects",
+			"Deletes <cy>alpha triggers</c> and removes the <cy>Hide</c> checkmark from every object. <cg>Recommended</c> to be checked to see all objects.",
 			"OK"
 		)->show();
 	}
@@ -296,6 +335,7 @@ public:
 		mod->setSavedValue("is-buffed", isBuffed);
 		mod->setSavedValue("saw-rotation-speed", sawRotationSpeed);
 		mod->setSavedValue("remap-groups", remapGroups);
+		mod->setSavedValue("unhide-invisible", unhideInvisible);
 
 		// log::info("ID={} | Buffed={} | Speed={}", targetLevelID, isBuffed, sawRotationSpeed);
 
@@ -317,7 +357,8 @@ public:
 				targetLevelID,
 				isBuffed,
 				sawRotationSpeed,
-				remapGroups
+				remapGroups,
+				unhideInvisible
 			);
 		}
 
@@ -361,7 +402,7 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
     void onButton(CCObject*) {
 		auto scene = CCDirector::sharedDirector()->getRunningScene();
 		ComparisonMenu::create(
-			[this](int levelID, bool isBuffed, float sawSpeed, bool remapGroups) {
+			[this](int levelID, bool isBuffed, float sawSpeed, bool remapGroups, bool unhideInvisible) {
 
 				GameLevelManager* glm = GameLevelManager::sharedState();
 
@@ -372,6 +413,7 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
 				config.isBuffed = isBuffed;
 				config.sawSpeed = sawSpeed;
 				config.remapGroups = remapGroups;
+				config.unhideInvisible = unhideInvisible;
 
 				std::string modifiedLevelString = createComparison(
 					level1,
@@ -412,12 +454,12 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	std::vector<std::string> levelStringSplit1, levelStringSplit2;
 	std::string firstElement;
 	const std::string kS38 = "kS38,1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1000_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1001_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1009_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1002_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1013_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1014_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1005_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1006_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1004_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1007_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1003_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1012_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1010_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1011_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1_5_1_7_1.000000_15_1.000000_9_3_10_180.000000a1.000000a1.000000a1a1_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_2_5_1_7_1.000000_15_1.000000_9_3_10_0.000000a1.000000a1.000000a1a1_18_0_8_1|,";
-
+ 
 	std::map<int, int> groupRemap;
 	if (config.remapGroups) {
 		std::set<int> usedInLevel1;
 		std::set<int> usedInLevel2;
-
+ 
 		auto collectGroups = [&](GJGameLevel* lvl, std::set<int>& outSet) {
 			std::string ls = ZipUtils::decompressString(lvl->m_levelString, false, 0);
 			std::vector<std::string> parts = splitString(ls, ";", true);
@@ -440,25 +482,28 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 				}
 			}
 		};
-
+ 
 		collectGroups(levels[0], usedInLevel1);
 		collectGroups(levels[1], usedInLevel2);
-
+ 
 		int nextFree = 1;
 		for (int id : usedInLevel2) {
 			while (usedInLevel1.count(nextFree)) nextFree++;
 			groupRemap[id] = nextFree++;
 		}
 	}
+	std::vector<int> effectiveObjects = objects;
+	if (!config.unhideInvisible) effectiveObjects.push_back(1007);
+ 
 	int levelIndex = 0;
-
+ 
 	for (GJGameLevel *level : levels) {
 		bool isSecondLevel = (levelIndex == 1);
 		std::string levelString = ZipUtils::decompressString(level->m_levelString, false, 0);
 		std::vector<std::string> levelStringSplit = splitString(levelString, ";", true);
 		firstElement = levelStringSplit.front();
 		levelStringSplit.erase(levelStringSplit.begin());
-
+ 
 		for (std::string& objectStr : levelStringSplit) {
 			bool isDecoration = false;
 			bool hasLayer1 = false; // 20
@@ -472,26 +517,26 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			bool disableRotation = false; // 98
 			bool noParticle = false; // 507
 			std::string newObjectStr = "";
-
+ 
 			std::vector<std::string> splitStrings = splitString(objectStr, ",", true);
 			std::vector<std::vector<std::string>> splitStringsPairs;
 			for (int i = 0; i < static_cast<int>(splitStrings.size()) - 1; i += 2) {
 				splitStringsPairs.push_back({ splitStrings[i], splitStrings[i + 1] });
 			}
-
+ 
 			// log::info("Object before: {}", objectStr);
-
+ 
 			for (std::vector<std::string>& pair : splitStringsPairs) {
 				int propID = stoi(pair[0]);
-
+ 
 				if (propID == 1) { // id
-					if (std::find(objects.begin(), objects.end(), stoi(pair[1])) == objects.end()) { // Check if object is decoration
+					if (std::find(effectiveObjects.begin(), effectiveObjects.end(), stoi(pair[1])) == effectiveObjects.end()) { // Check if object is decoration
 						isDecoration = true;
 						objectStr = "";
 						break;
 					} else {
 						int objID = stoi(pair[1]);
-
+ 
 						for (const auto& objPair : blackObjects) {
 							if (objID == objPair[0]) {
 								objID = objPair[1];
@@ -499,14 +544,14 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 								break;
 							}
 						}
-
+ 
 						newObjectStr += "1," + pair[1] + ",";
 						continue;
 					}
 				}
-
+ 
 				if (isDecoration) break;
-
+ 
 				switch (propID) {
 					case 19: // delete 1.9 color
 						continue;
@@ -553,6 +598,9 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 					case 103: // turn off high detail
 						continue;
 					case 135: // turn off hide
+						if (!config.unhideInvisible) {
+							newObjectStr += pair[0] + "," + pair[1] + ",";
+						}
 						continue;
 					case 507: // no particle
 						noParticle = true;
@@ -592,8 +640,8 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						continue;
 				}
 			}
-
-
+ 
+ 
 			if (!hasLayer1) { first ? newObjectStr += "20,1," : newObjectStr += "20,2,"; }
 			if (!hasColor1) { first ? newObjectStr += "21,1," : newObjectStr += "21,2,"; }
 			if (!hasColor2) { first ? newObjectStr += "22,1," : newObjectStr += "22,2,"; }
@@ -604,22 +652,22 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			if (!customRotationSpeed) { if (config.sawSpeed != 0) newObjectStr += "97," + std::to_string(config.sawSpeed) + ".000000,"; }
 			if (!disableRotation) { if (config.sawSpeed == 0) newObjectStr += "98,1,"; }
 			if (!noParticle) newObjectStr += "507,1,";
-
+ 
 			if (!newObjectStr.empty()) {
 				newObjectStr.pop_back(); // Remove the last comma
 				objectStr = newObjectStr;
 			} else {
 				objectStr = "";
 			}
-
+ 
 			// log::info("Object after: {}", objectStr);
 		}
-
+ 
 		levelIndex++;
 		first ? levelStringSplit1 = levelStringSplit : levelStringSplit2 = levelStringSplit;
 		first = !first;
 	}
-
+ 
 	std::vector<std::string> firstElementSplit = splitString(firstElement, ",", false);
 	std::vector<std::vector<std::string>> firstElementPairs;
 	for (int i = 0; i < static_cast<int>(firstElementSplit.size()) - 1; i += 2) {
@@ -627,7 +675,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	}
 	// log::info("firstElement: {}", firstElement);
 	// log::info("firstElementPairs: {}", firstElementPairs);
-
+ 
 	std::string newFirstElement;
 	for (std::vector<std::string>& pair : firstElementPairs) {
 		if (pair[0] == "kA6") { // background texture
@@ -661,7 +709,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			newFirstElement += pair[0] + "," + pair[1] + ",";
 		}
 	}
-
+ 
 	if (newFirstElement.find("kS38,") == std::string::npos) {
 		newFirstElement += kS38;
 	}
@@ -669,7 +717,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	std::string modifiedLevelString = newFirstElement + ";" + joinString(levelStringSplit1, ";") + joinString(levelStringSplit2, ";");
 	return modifiedLevelString;
 }
-
+ 
 std::vector<std::string> splitString(const std::string& s, const std::string& delimiter, bool skipEmpty) {
     std::vector<std::string> splitStrings;
     size_t pos = 0, found;
@@ -687,7 +735,7 @@ std::vector<std::string> splitString(const std::string& s, const std::string& de
     }
     return splitStrings;
 }
-
+ 
 std::string joinString(const std::vector<std::string>& elems, const std::string& delimiter) {
     std::stringstream ss;
     for (size_t i = 0; i < elems.size(); ++i) {
@@ -697,11 +745,11 @@ std::string joinString(const std::vector<std::string>& elems, const std::string&
     }
     return ss.str();
 }
-
+ 
 int stoi(std::string& str) {
 	return utils::numFromString<int>(str).unwrapOr(0);
 }
-
+ 
 int stof(std::string& str) {
 	return utils::numFromString<float>(str).unwrapOr(0);
 }
