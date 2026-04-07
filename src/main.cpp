@@ -714,7 +714,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 		newFirstElement += kS38;
 	}
 	
-	std::string modifiedLevelString = newFirstElement + ";" + joinString(levelStringSplit1, ";") + joinString(levelStringSplit2, ";");
+	std::string modifiedLevelString = newFirstElement + ";" + joinString(levelStringSplit1, ";") + ";" + joinString(levelStringSplit2, ";");
 	return modifiedLevelString;
 }
  
