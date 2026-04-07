@@ -1,3 +1,11 @@
+# v0.4.0
+- Minor update
+Features:
+    - Added toggle Remap groups
+    - Added toggle Unhide objects
+Bugfixes:
+    - Fixed first object of target level always getting deleted
+
 # v0.3.1
 - Added Node IDs dependency
 
