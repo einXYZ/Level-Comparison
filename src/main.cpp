@@ -2,6 +2,8 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
+#include <map>
+#include <set>
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/ui/TextInput.hpp>
@@ -136,7 +138,6 @@ public:
 		nerfedBuffedInfo->setPosition({ 350.f, 205.f });
 		menu->addChild(nerfedBuffedInfo);
 
-        // set initial toggle state
         buffedToggle->toggle(isBuffed);
         nerfedToggle->toggle(!isBuffed);
 		buffedToggle->setClickable(false);
@@ -180,6 +181,7 @@ public:
 			0.8f
 		);
         remapToggle->setPosition({ 160.f, 130.f });
+		remapToggle->toggle(remapGroups);
         menu->addChild(remapToggle);
 
         auto remapLabel = CCLabelBMFont::create("Remap\ngroups", "goldFont.fnt");
@@ -411,21 +413,41 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	std::string firstElement;
 	const std::string kS38 = "kS38,1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1000_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1001_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1009_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1002_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1013_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1014_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1005_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1006_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1004_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1007_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1003_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1012_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1010_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1011_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1_5_1_7_1.000000_15_1.000000_9_3_10_180.000000a1.000000a1.000000a1a1_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_2_5_1_7_1.000000_15_1.000000_9_3_10_0.000000a1.000000a1.000000a1a1_18_0_8_1|,";
 
-	int maxGroupID = 0;
+	std::map<int, int> groupRemap;
 	if (config.remapGroups) {
-		std::string ls = ZipUtils::decompressString(levels[0]->m_levelString, false, 0);
-		std::vector<std::string> parts = splitString(ls, ";", true);
-		parts.erase(parts.begin());
-		for (std::string& obj : parts) {
-			std::vector<std::string> tokens = splitString(obj, ",", true);
-			for (int i = 0; i < static_cast<int>(tokens.size()) - 1; i += 2) {
-				std::string keyStr = tokens[i];
-				std::string valStr = tokens[i + 1];
-				if (std::find(groupKeys.begin(), groupKeys.end(), stoi(keyStr)) != groupKeys.end()) {
-					int val = stoi(valStr);
-					if (val > maxGroupID) maxGroupID = val;
+		std::set<int> usedInLevel1;
+		std::set<int> usedInLevel2;
+
+		auto collectGroups = [&](GJGameLevel* lvl, std::set<int>& outSet) {
+			std::string ls = ZipUtils::decompressString(lvl->m_levelString, false, 0);
+			std::vector<std::string> parts = splitString(ls, ";", true);
+			parts.erase(parts.begin());
+			for (std::string& obj : parts) {
+				std::vector<std::string> tokens = splitString(obj, ",", true);
+				for (int i = 0; i < static_cast<int>(tokens.size()) - 1; i += 2) {
+					int key = stoi(tokens[i]);
+					if (std::find(groupKeys.begin(), groupKeys.end(), key) != groupKeys.end()) {
+						if (key == 57 || key == 274 || key == 442) {
+							for (std::string& idStr : splitString(tokens[i + 1], ".", true)) {
+								int val = stoi(idStr);
+								if (val > 0) outSet.insert(val);
+							}
+						} else {
+							int val = stoi(tokens[i + 1]);
+							if (val > 0) outSet.insert(val);
+						}
+					}
 				}
 			}
+		};
+
+		collectGroups(levels[0], usedInLevel1);
+		collectGroups(levels[1], usedInLevel2);
+
+		int nextFree = 1;
+		for (int id : usedInLevel2) {
+			while (usedInLevel1.count(nextFree)) nextFree++;
+			groupRemap[id] = nextFree++;
 		}
 	}
 	int levelIndex = 0;
@@ -536,15 +558,32 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						noParticle = true;
 						newObjectStr += "507,1,";
 						continue;
-					case 33: case 51: case 57: case 71: case 76: case 108: case 274:
-					case 395: case 442: case 448: case 455: case 457:
+					case 33: case 51: case 71: case 76: case 108:
+					case 395: case 448: case 455: case 457:
 					case 516: case 517: case 518: case 519:
-						if (config.remapGroups && isSecondLevel && maxGroupID > 0) {
+						if (config.remapGroups && isSecondLevel && !groupRemap.empty()) {
 							int val = stoi(pair[1]);
-							if (val > 0) {
-								newObjectStr += pair[0] + "," + std::to_string(val + maxGroupID) + ",";
+							if (val > 0 && groupRemap.count(val)) {
+								newObjectStr += pair[0] + "," + std::to_string(groupRemap[val]) + ",";
 								continue;
 							}
+						}
+						newObjectStr += pair[0] + "," + pair[1] + ",";
+						continue;
+					case 57: case 274: case 442:
+						if (config.remapGroups && isSecondLevel && !groupRemap.empty()) {
+							std::vector<std::string> ids = splitString(pair[1], ".", true);
+							std::string remapped;
+							for (std::string& idStr : ids) {
+								int val = stoi(idStr);
+								if (val > 0 && groupRemap.count(val))
+									remapped += std::to_string(groupRemap[val]) + ".";
+								else
+									remapped += idStr + ".";
+							}
+							if (!remapped.empty()) remapped.pop_back();
+							newObjectStr += pair[0] + "," + remapped + ",";
+							continue;
 						}
 						newObjectStr += pair[0] + "," + pair[1] + ",";
 						continue;
