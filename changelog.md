@@ -1,3 +1,6 @@
+# v0.4.1
+- Updated mod info
+
 # v0.4.0
 - Minor update
 Features:
