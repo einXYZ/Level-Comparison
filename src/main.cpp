@@ -291,7 +291,7 @@ public:
 	void onRemapGroupsInfo(CCObject*) {
 		FLAlertLayer::create(
 			"Remap Groups",
-			"<cy>Common Group IDs</c> used by both levels will be remapped so they don't interfere each other. <cg>Recommended</c> to be always checked.",
+			"<cy>Common Group IDs</c> used by both levels will be remapped so they don't interfere with each other. <cg>Recommended</c> to be always checked.",
 			"OK"
 		)->show();
 	}
