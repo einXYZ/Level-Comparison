@@ -27,12 +27,14 @@ public:
 	std::function<void(
 		int targetLevelID,
 		bool isBuffed,
-		float sawRotationSpeed
+		float sawRotationSpeed,
+		bool remapGroups
 	)> onCreateCallback;
 
     int targetLevelID = 0;
     bool isBuffed = false;
     float sawRotationSpeed = 0.f;
+	bool remapGroups = true;
 
     CCLabelBMFont* speedLabel = nullptr;
     CCMenuItemToggler* buffedToggle = nullptr;
@@ -40,7 +42,7 @@ public:
 	CCMenuItemToggler* remapToggle = nullptr;
 
 
-    static ComparisonMenu* create(std::function<void(int, bool, float)> onCreate) {
+    static ComparisonMenu* create(std::function<void(int, bool, float, bool)> onCreate) {
 		auto ret = new ComparisonMenu();
 		if (ret && ret->init()) {
 			ret->onCreateCallback = onCreate;
@@ -61,6 +63,7 @@ public:
         targetLevelID = mod->getSavedValue<int>("target-level-id", 0);
         isBuffed = mod->getSavedValue<bool>("is-buffed", false);
         sawRotationSpeed = mod->getSavedValue<float>("saw-rotation-speed", 0.f);
+		remapGroups = mod->getSavedValue<bool>("remap-groups", true);
 
         auto panel = CCLayerColor::create({ 0, 0, 0, 0 });
         panel->setContentSize({ 360.f, 260.f });
@@ -146,11 +149,10 @@ public:
 		speedText->setScale(0.8);
         panel->addChild(speedText);
 
-		auto sawInfoSprite = CCSprite::createWithSpriteFrameName("GJ_infoIcon_001.png");
-		sawInfoSprite->setScale(0.5f);
+		infoSprite->setScale(0.5f);
 
 		auto sawRotationInfo = CCMenuItemSpriteExtra::create(
-			sawInfoSprite,
+			infoSprite,
 			this,
 			menu_selector(ComparisonMenu::onSawRotationInfo)
 		);
@@ -172,28 +174,27 @@ public:
         panel->addChild(sawSpeedInput);
 		
 		// remap groups
-		/* remapToggle = CCMenuItemToggler::createWithStandardSprites(
+		remapToggle = CCMenuItemToggler::createWithStandardSprites(
 			this,
-			menu_selector(ComparisonMenu::onNerfed),
+			menu_selector(ComparisonMenu::onRemap),
 			0.8f
 		);
         remapToggle->setPosition({ 160.f, 130.f });
-		remapToggle->setEnabled(false);
         menu->addChild(remapToggle);
 
-        auto remapLabel = CCLabelBMFont::create("Remap groups", "goldFont.fnt");
-        remapLabel->setPosition({ 240.f, 130.f });
+        auto remapLabel = CCLabelBMFont::create("Remap\ngroups", "goldFont.fnt");
+        remapLabel->setPosition({ 210.f, 130.f });
 		remapLabel->setScale(0.7);
         panel->addChild(remapLabel);
 
 		auto remapInfo = CCMenuItemSpriteExtra::create(
 			infoSprite,
 			this,
-			menu_selector(ComparisonMenu::onComingSoonInfo)
+			menu_selector(ComparisonMenu::onRemapGroupsInfo)
 		);
 
-		remapInfo->setPosition({ 300.f, 145.f });
-		menu->addChild(remapInfo); */
+		remapInfo->setPosition({ 240.f, 150.f });
+		menu->addChild(remapInfo);
 
         // buttons
         auto abortBtn = CCMenuItemSpriteExtra::create(
@@ -233,6 +234,11 @@ public:
 		nerfedToggle->toggle(true);
 	}
 
+	void onRemap(CCObject*) {
+		remapGroups = !remapToggle->m_toggled;
+		log::info("{}", remapGroups);
+	}
+
 	void onBuffedNerfedInfo(CCObject*) {
 		FLAlertLayer::create(
 			"Info",
@@ -245,6 +251,14 @@ public:
 		FLAlertLayer::create(
 			"Saw Rotation",
 			"Sets the rotation speed of <cy>saw blade objects</c> in the comparison. Set to <cg>0</c> to disable saw rotation.",
+			"OK"
+		)->show();
+	}
+
+	void onRemapGroupsInfo(CCObject*) {
+		FLAlertLayer::create(
+			"Remap Groups",
+			"<cy>Common Group IDs</c> used by both levels will be remapped so they don't interfere each other. <cg>Recommended</c> to be always checked.",
 			"OK"
 		)->show();
 	}
@@ -279,6 +293,7 @@ public:
 		mod->setSavedValue("target-level-id", targetLevelID);
 		mod->setSavedValue("is-buffed", isBuffed);
 		mod->setSavedValue("saw-rotation-speed", sawRotationSpeed);
+		mod->setSavedValue("remap-groups", remapGroups);
 
 		// log::info("ID={} | Buffed={} | Speed={}", targetLevelID, isBuffed, sawRotationSpeed);
 
@@ -299,7 +314,8 @@ public:
 			onCreateCallback(
 				targetLevelID,
 				isBuffed,
-				sawRotationSpeed
+				sawRotationSpeed,
+				remapGroups
 			);
 		}
 
@@ -343,7 +359,7 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
     void onButton(CCObject*) {
 		auto scene = CCDirector::sharedDirector()->getRunningScene();
 		ComparisonMenu::create(
-			[this](int levelID, bool isBuffed, float sawSpeed) {
+			[this](int levelID, bool isBuffed, float sawSpeed, bool remapGroups) {
 
 				GameLevelManager* glm = GameLevelManager::sharedState();
 
@@ -353,6 +369,7 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
 				ComparisonConfig config;
 				config.isBuffed = isBuffed;
 				config.sawSpeed = sawSpeed;
+				config.remapGroups = remapGroups;
 
 				std::string modifiedLevelString = createComparison(
 					level1,
@@ -394,7 +411,27 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	std::string firstElement;
 	const std::string kS38 = "kS38,1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1000_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1001_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1009_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1002_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1013_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1014_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1005_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1006_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1004_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1007_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1003_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1012_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1010_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1011_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1_5_1_7_1.000000_15_1.000000_9_3_10_180.000000a1.000000a1.000000a1a1_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_2_5_1_7_1.000000_15_1.000000_9_3_10_0.000000a1.000000a1.000000a1a1_18_0_8_1|,";
 
+	int maxGroupID = 0;
+	if (config.remapGroups) {
+		std::string ls = ZipUtils::decompressString(levels[0]->m_levelString, false, 0);
+		std::vector<std::string> parts = splitString(ls, ";", true);
+		parts.erase(parts.begin());
+		for (std::string& obj : parts) {
+			std::vector<std::string> tokens = splitString(obj, ",", true);
+			for (int i = 0; i < static_cast<int>(tokens.size()) - 1; i += 2) {
+				std::string keyStr = tokens[i];
+				std::string valStr = tokens[i + 1];
+				if (std::find(groupKeys.begin(), groupKeys.end(), stoi(keyStr)) != groupKeys.end()) {
+					int val = stoi(valStr);
+					if (val > maxGroupID) maxGroupID = val;
+				}
+			}
+		}
+	}
+	int levelIndex = 0;
+
 	for (GJGameLevel *level : levels) {
+		bool isSecondLevel = (levelIndex == 1);
 		std::string levelString = ZipUtils::decompressString(level->m_levelString, false, 0);
 		std::vector<std::string> levelStringSplit = splitString(levelString, ";", true);
 		firstElement = levelStringSplit.front();
@@ -498,7 +535,19 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 					case 507: // no particle
 						noParticle = true;
 						newObjectStr += "507,1,";
-						continue; 
+						continue;
+					case 33: case 51: case 57: case 71: case 76: case 108: case 274:
+					case 395: case 442: case 448: case 455: case 457:
+					case 516: case 517: case 518: case 519:
+						if (config.remapGroups && isSecondLevel && maxGroupID > 0) {
+							int val = stoi(pair[1]);
+							if (val > 0) {
+								newObjectStr += pair[0] + "," + std::to_string(val + maxGroupID) + ",";
+								continue;
+							}
+						}
+						newObjectStr += pair[0] + "," + pair[1] + ",";
+						continue;
 					default:
 						newObjectStr += pair[0] + "," + pair[1] + ",";
 						continue;
@@ -527,6 +576,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			// log::info("Object after: {}", objectStr);
 		}
 
+		levelIndex++;
 		first ? levelStringSplit1 = levelStringSplit : levelStringSplit2 = levelStringSplit;
 		first = !first;
 	}

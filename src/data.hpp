@@ -1,8 +1,8 @@
 struct ComparisonConfig {
     bool isBuffed;
     float sawSpeed;
-
-    //bool mapGroups;
+    bool remapGroups;
+    
     //bool markDBlocks;
     //bool mapTriggers;
 };
