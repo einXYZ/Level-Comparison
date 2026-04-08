@@ -3,7 +3,6 @@ struct ComparisonConfig {
     float sawSpeed;
     bool remapGroups;
     bool unhideObjects;
-    bool replaceInvisible;
     bool showModifiers;
 };
 

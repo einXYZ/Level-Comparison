@@ -32,7 +32,6 @@ public:
 		float sawRotationSpeed,
 		bool remapGroups,
 		bool unhideObjects,
-		bool replaceInvisible,
 		bool showModifiers
 	)> onCreateCallback;
 
@@ -41,7 +40,6 @@ public:
     float sawRotationSpeed = 0.f;
 	bool remapGroups = true;
 	bool unhideObjects = true;
-	bool replaceInvisible = true;
 	bool showModifiers = true;
 
     CCLabelBMFont* speedLabel = nullptr;
@@ -49,11 +47,10 @@ public:
     CCMenuItemToggler* nerfedToggle = nullptr;
 	CCMenuItemToggler* remapToggle = nullptr;
 	CCMenuItemToggler* unhideToggle = nullptr;
-	CCMenuItemToggler* replaceInvisibleToggle = nullptr;
 	CCMenuItemToggler* showModifiersToggle = nullptr;
 
 
-    static ComparisonMenu* create(std::function<void(int, bool, float, bool, bool, bool, bool)> onCreate) {
+    static ComparisonMenu* create(std::function<void(int, bool, float, bool, bool, bool)> onCreate) {
 		auto ret = new ComparisonMenu();
 		if (ret && ret->init()) {
 			ret->onCreateCallback = onCreate;
@@ -76,7 +73,6 @@ public:
         sawRotationSpeed = mod->getSavedValue<float>("saw-rotation-speed", 0.f);
 		remapGroups = mod->getSavedValue<bool>("remap-groups", true);
 		unhideObjects = mod->getSavedValue<bool>("unhide-invisible", true);
-		replaceInvisible = mod->getSavedValue<bool>("replace-invisible", true);
 		showModifiers = mod->getSavedValue<bool>("show-modifiers", true);
 
         auto panel = CCLayerColor::create({ 0, 0, 0, 0 });
@@ -233,41 +229,18 @@ public:
 		unhideInfo->setPosition({ 350.f, 150.f });
 		menu->addChild(unhideInfo);
 
-		// replace invisible
-		replaceInvisibleToggle = CCMenuItemToggler::createWithStandardSprites(
-			this,
-			menu_selector(ComparisonMenu::onReplaceInvisible),
-			0.8f
-		);
-		replaceInvisibleToggle->setPosition({ 160.f, 80.f });
-		replaceInvisibleToggle->toggle(replaceInvisible);
-		menu->addChild(replaceInvisibleToggle);
-
-		auto replaceInvisibleLabel = CCLabelBMFont::create("Replace\ninvisible", "goldFont.fnt");
-		replaceInvisibleLabel->setPosition({ 210.f, 80.f });
-		replaceInvisibleLabel->setScale(0.6);
-		panel->addChild(replaceInvisibleLabel);
-
-		auto replaceInvisibleInfo = CCMenuItemSpriteExtra::create(
-			infoSprite,
-			this,
-			menu_selector(ComparisonMenu::onReplaceInvisibleInfo)
-		);
-		replaceInvisibleInfo->setPosition({ 240.f, 100.f });
-		menu->addChild(replaceInvisibleInfo);
-
 		// show modifiers
 		showModifiersToggle = CCMenuItemToggler::createWithStandardSprites(
 			this,
 			menu_selector(ComparisonMenu::onShowModifiers),
 			0.8f
 		);
-		showModifiersToggle->setPosition({ 270.f, 80.f });
+		showModifiersToggle->setPosition({ 160.f, 80.f });
 		showModifiersToggle->toggle(showModifiers);
 		menu->addChild(showModifiersToggle);
 
 		auto showModifiersLabel = CCLabelBMFont::create("Show\nmodifiers", "goldFont.fnt");
-		showModifiersLabel->setPosition({ 320.f, 80.f });
+		showModifiersLabel->setPosition({ 210.f, 80.f });
 		showModifiersLabel->setScale(0.6);
 		panel->addChild(showModifiersLabel);
 
@@ -276,7 +249,7 @@ public:
 			this,
 			menu_selector(ComparisonMenu::onShowModifiersInfo)
 		);
-		showModifiersInfo->setPosition({ 350.f, 100.f });
+		showModifiersInfo->setPosition({ 240.f, 100.f });
 		menu->addChild(showModifiersInfo);
 
         // buttons
@@ -326,10 +299,6 @@ public:
 		unhideObjects = !unhideToggle->m_toggled;
 	}
 
-	void onReplaceInvisible(CCObject*) {
-		replaceInvisible = !replaceInvisibleToggle->m_toggled;
-	}
-
 	void onShowModifiers(CCObject*) {
 		showModifiers = !showModifiersToggle->m_toggled;
 	}
@@ -362,14 +331,6 @@ public:
 		FLAlertLayer::create(
 			"Unhide Objects",
 			"Deletes <cy>alpha triggers</c> and removes the <cy>Hide</c> checkmark from every object. <cg>Recommended</c> to be checked to see all objects.",
-			"OK"
-		)->show();
-	}
-
-	void onReplaceInvisibleInfo(CCObject*) {
-		FLAlertLayer::create(
-			"Replace Invisible",
-			"Replaces the <cy>1.6 invisible objects</c> with their visible counterparts.",
 			"OK"
 		)->show();
 	}
@@ -414,7 +375,6 @@ public:
 		mod->setSavedValue("saw-rotation-speed", sawRotationSpeed);
 		mod->setSavedValue("remap-groups", remapGroups);
 		mod->setSavedValue("unhide-invisible", unhideObjects);
-		mod->setSavedValue("replace-invisible", replaceInvisible);
 		mod->setSavedValue("show-modifiers", showModifiers);
 
 		// log::info("ID={} | Buffed={} | Speed={}", targetLevelID, isBuffed, sawRotationSpeed);
@@ -439,7 +399,6 @@ public:
 				sawRotationSpeed,
 				remapGroups,
 				unhideObjects,
-				replaceInvisible,
 				showModifiers
 			);
 		}
@@ -484,7 +443,7 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
     void onButton(CCObject*) {
 		auto scene = CCDirector::sharedDirector()->getRunningScene();
 		ComparisonMenu::create(
-			[this](int levelID, bool isBuffed, float sawSpeed, bool remapGroups, bool unhideObjects, bool replaceInvisible, bool showModifiers) {
+			[this](int levelID, bool isBuffed, float sawSpeed, bool remapGroups, bool unhideObjects, bool showModifiers) {
 
 				GameLevelManager* glm = GameLevelManager::sharedState();
 
@@ -496,7 +455,6 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
 				config.sawSpeed = sawSpeed;
 				config.remapGroups = remapGroups;
 				config.unhideObjects = unhideObjects;
-				config.replaceInvisible = replaceInvisible;
 				config.showModifiers = showModifiers;
 
 				std::string modifiedLevelString = createComparison(
