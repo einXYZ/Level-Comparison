@@ -462,14 +462,7 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
 					level2,
 					config
 				);
-				FLAlertLayer::create(
-					"Level Comparison",
-					fmt::format("Created comparison of {} and {}",
-						level1->m_levelName.c_str(),
-						level2->m_levelName.c_str()),
-					"OK"
-				)->show();
-				
+
 				GJGameLevel* newLevel = glm->createNewLevel();
 				newLevel->m_levelName = "Unnamed comparison";
 				newLevel->m_levelString = modifiedLevelString;
@@ -485,6 +478,9 @@ class $modify(MakeLevelLayoutLayer, LevelInfoLayer) {
 				newLevel->m_songID = level1->m_songID;
 				newLevel->m_audioTrack = level1->m_audioTrack;
 				newLevel->m_levelLength = level1->m_levelLength;
+
+				auto scene = EditLevelLayer::scene(newLevel);
+				CCDirector::sharedDirector()->pushScene(CCTransitionFade::create(0.5f, scene));
 			}
 		)->show();
     }
