@@ -1,3 +1,13 @@
+# v0.5.0
+- Minor update
+Features:
+    - Added toggle Show Modifiers
+    - Changed default font to Font 1
+    - Removed successful popup after creating the comparison
+    - Scene now automatically switches to the created level (just like when cloning a level)
+Bugfixes:
+    - Fixed F-blocks not counting towards gameplay objects
+
 # v0.4.1
 - Updated mod info
 

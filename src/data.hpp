@@ -13,3 +13,5 @@ std::vector<int> groupKeys = {
 static const std::map<int, std::string> modifierLetters = {
 		{1755, "RA=="}, {1813, "Sg=="}, {1829, "Uw=="}, {1859, "SA=="}, {2866, "Rg=="}
 	};
+
+std::vector<int> portalCompareKeys = { 2, 3, 4, 5, 6, 32, 128, 129, 131, 132 };

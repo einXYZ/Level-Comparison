@@ -709,6 +709,58 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 		first = !first;
 	}
 
+	auto parseProps = [&](const std::string& obj) -> std::map<int, std::string> {
+		std::map<int, std::string> props;
+		std::vector<std::string> tokens = splitString(obj, ",", true);
+		for (int i = 0; i + 1 < static_cast<int>(tokens.size()); i += 2)
+			props[stoi(tokens[i])] = tokens[i + 1];
+		return props;
+	};
+
+	auto getFloat = [](std::map<int, std::string>& p, int k) -> float {
+		auto it = p.find(k);
+		return it == p.end() ? 0.f : stof(it->second);
+	};
+
+	struct PortalEntry { size_t idx; std::map<int, std::string> props; };
+	std::vector<PortalEntry> portals1, portals2;
+
+	for (size_t i = 0; i < levelStringSplit1.size(); i++) {
+		if (levelStringSplit1[i].empty()) continue;
+		auto p = parseProps(levelStringSplit1[i]);
+		if (!p.count(1) || std::find(portals.begin(), portals.end(), stoi(p[1])) == portals.end()) continue;
+		portals1.push_back({ i, p });
+	}
+
+	for (size_t i = 0; i < levelStringSplit2.size(); i++) {
+		if (levelStringSplit2[i].empty()) continue;
+		auto p = parseProps(levelStringSplit2[i]);
+		if (!p.count(1) || std::find(portals.begin(), portals.end(), stoi(p[1])) == portals.end()) continue;
+		portals2.push_back({ i, p });
+	}
+
+	for (PortalEntry& e2 : portals2) {
+		for (PortalEntry& e1 : portals1) {
+			if (stoi(e1.props[1]) != stoi(e2.props[1])) continue;
+			bool match = true;
+			for (int k : portalCompareKeys)
+				if (std::abs(getFloat(e1.props, k) - getFloat(e2.props, k)) > 0.001f) { match = false; break; }
+			if (!match) continue;
+
+			std::string newPortalString;
+			std::vector<std::string> tokens = splitString(levelStringSplit1[e1.idx], ",", true);
+			for (int i = 0; i + 1 < static_cast<int>(tokens.size()); i += 2) {
+				int k = stoi(tokens[i]);
+				if (k == 21 || k == 22) continue;
+				newPortalString += tokens[i] + "," + tokens[i + 1] + ",";
+			}
+			if (!newPortalString.empty()) newPortalString.pop_back();
+			levelStringSplit1[e1.idx] = newPortalString;
+			levelStringSplit2[e2.idx] = "";
+			break;
+		}
+	}
+
 	if (config.showModifiers) {
 		auto replaceModifiers = [&](std::vector<std::string>& split) {
 			for (std::string& obj : split) {

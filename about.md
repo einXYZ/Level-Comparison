@@ -8,14 +8,12 @@ Create your own level comparisons by using the menu button on the level page!
 - Set saw rotation speed
 - Toggle remapping groups
 - Toggle unhide invisible
+- Toggle show modifiers (D-blocks etc.)
 - Create the level; The mod automatically:
     - Removes all deco
     - Divide the two levels to layers 1 and 2
     - Adjust all color channels
     - Replace black objects with their colored version
-
-## Upcoming features
-- Toggle show D-blocks etc.
 
 ## How to use
 - Go to any online level
