@@ -40,7 +40,7 @@ public:
     float sawRotationSpeed = 0.f;
 	bool remapGroups = true;
 	bool unhideObjects = true;
-	bool showModifiers = true;
+	bool showModifiers = false;
 
     CCLabelBMFont* speedLabel = nullptr;
     CCMenuItemToggler* buffedToggle = nullptr;
@@ -73,7 +73,7 @@ public:
         sawRotationSpeed = mod->getSavedValue<float>("saw-rotation-speed", 0.f);
 		remapGroups = mod->getSavedValue<bool>("remap-groups", true);
 		unhideObjects = mod->getSavedValue<bool>("unhide-invisible", true);
-		showModifiers = mod->getSavedValue<bool>("show-modifiers", true);
+		showModifiers = mod->getSavedValue<bool>("show-modifiers", false);
 
         auto panel = CCLayerColor::create({ 0, 0, 0, 0 });
         panel->setContentSize({ 360.f, 260.f });
@@ -532,6 +532,9 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	}
 	std::vector<int> effectiveObjects = objects;
 	if (!config.unhideObjects) effectiveObjects.push_back(1007);
+
+	if (config.showModifiers) 
+		for (const auto& kv : modifierLetters) effectiveObjects.push_back(kv.first);
  
 	int levelIndex = 0;
  
@@ -705,6 +708,32 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 		first ? levelStringSplit1 = levelStringSplit : levelStringSplit2 = levelStringSplit;
 		first = !first;
 	}
+
+	if (config.showModifiers) {
+		auto replaceModifiers = [&](std::vector<std::string>& split) {
+			for (std::string& obj : split) {
+				if (obj.empty()) continue;
+				std::vector<std::string> tokens = splitString(obj, ",", true);
+				int objID = 0;
+				std::string x, y, layer, c1;
+				for (int i = 0; i + 1 < static_cast<int>(tokens.size()); i += 2) {
+					int k = stoi(tokens[i]);
+					if (k == 1) objID = stoi(tokens[i + 1]);
+					else if (k == 2) x = tokens[i + 1];
+					else if (k == 3) y = tokens[i + 1];
+					else if (k == 20) layer = tokens[i + 1];
+					else if (k == 21) c1 = tokens[i + 1];
+				}
+				if (!modifierLetters.count(objID)) continue;
+				std::string letter = modifierLetters.at(objID);
+				std::string box = "1,467,2," + x + ",3," + y + ",20," + layer + ",21," + c1 + ",22," + c1 + ",64,1,67,1,96,1,98,1,507,1,121,1";
+				std::string txt = "1,914,2," + x + ",3," + y + ",31," + letter + ",32,0.500000,20," + layer + ",21," + c1 + ",64,1,67,1,96,1,121,1";
+				obj = obj + ";" + box + ";" + txt;
+			}
+		};
+		replaceModifiers(levelStringSplit1);
+		replaceModifiers(levelStringSplit2);
+	}
  
 	std::vector<std::string> firstElementSplit = splitString(firstElement, ",", false);
 	std::vector<std::vector<std::string>> firstElementPairs;
@@ -726,7 +755,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			newFirstElement += "kA17,1,";
 		}
 		else if (pair[0] == "kA18") { // font
-			newFirstElement += "kA18,6,";
+			newFirstElement += "kA18,0,";
 		}
 		else if (pair[0] == "kA25") { // middleground texture
 			newFirstElement += "kA25,0,";
