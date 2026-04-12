@@ -1,3 +1,8 @@
+# v0.5.1
+- Bugfix Update
+Bugfixes:
+    - Fixed show modifier scaling
+
 # v0.5.0
 - Minor update
 Features:

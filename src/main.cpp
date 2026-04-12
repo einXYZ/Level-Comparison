@@ -762,27 +762,56 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	}
 
 	if (config.showModifiers) {
+		static const auto keyValueIfSet = [](int key, const std::string& val) {
+			return val.empty() ? "" : "," + std::to_string(key) + "," + val;
+		};
+
 		auto replaceModifiers = [&](std::vector<std::string>& split) {
 			for (std::string& obj : split) {
 				if (obj.empty()) continue;
+
 				std::vector<std::string> tokens = splitString(obj, ",", true);
 				int objID = 0;
-				std::string x, y, layer, c1;
+				std::string x, y, h, v, r, layer, c1, scale, scaleX, scaleY, warpX, warpY;
+
 				for (int i = 0; i + 1 < static_cast<int>(tokens.size()); i += 2) {
-					int k = stoi(tokens[i]);
-					if (k == 1) objID = stoi(tokens[i + 1]);
-					else if (k == 2) x = tokens[i + 1];
-					else if (k == 3) y = tokens[i + 1];
-					else if (k == 20) layer = tokens[i + 1];
-					else if (k == 21) c1 = tokens[i + 1];
+					switch (stoi(tokens[i])) {
+						case 1: objID = stoi(tokens[i + 1]); break;
+						case 2: x = tokens[i + 1]; break;
+						case 3: y = tokens[i + 1]; break;
+						case 4: h = tokens[i + 1]; break;
+						case 5: v = tokens[i + 1]; break;
+						case 6: r = tokens[i + 1]; break;
+						case 20: layer = tokens[i + 1]; break;
+						case 21: c1 = tokens[i + 1]; break;
+						case 32: scale = tokens[i + 1]; break;
+						case 128: scaleX = tokens[i + 1]; break;
+						case 129: scaleY = tokens[i + 1]; break;
+						case 131: warpY = tokens[i + 1]; break;
+						case 132: warpX = tokens[i + 1]; break;
+					}
 				}
+
 				if (!modifierLetters.count(objID)) continue;
-				std::string letter = modifierLetters.at(objID);
-				std::string box = "1,467,2," + x + ",3," + y + ",20," + layer + ",21," + c1 + ",22," + c1 + ",64,1,67,1,96,1,98,1,507,1,121,1";
-				std::string txt = "1,914,2," + x + ",3," + y + ",31," + letter + ",32,0.500000,20," + layer + ",21," + c1 + ",64,1,67,1,96,1,121,1";
+
+				float baseScale = scale.empty() ? 1.f : stof(scale);
+				std::string halfScale = fmt::format("{:.6f}", baseScale * 0.5f);
+				auto halved = [](const std::string& s) {
+					return s.empty() ? "" : fmt::format("{:.6f}", stof(s) * 0.5f);
+				};
+
+				std::string base = ",2," + x + ",3," + y + ",20," + layer + ",21," + c1;
+				std::string flip = keyValueIfSet(4, h) + keyValueIfSet(5, v) + keyValueIfSet(6, r);
+				std::string warp = keyValueIfSet(128, scaleX) + keyValueIfSet(129, scaleY) + keyValueIfSet(131, warpY) + keyValueIfSet(132, warpX);
+				std::string txtWarp = keyValueIfSet(128, halved(scaleX)) + keyValueIfSet(129, halved(scaleY)) + keyValueIfSet(131, warpY) + keyValueIfSet(132, warpX);
+
+				std::string box = "1,467" + base + ",22," + c1 + ",64,1,67,1,96,1,98,1,507,1,121,1" + keyValueIfSet(32, scale) + flip + warp;
+				std::string txt = "1,914" + base + ",31," + modifierLetters.at(objID) + ",32," + halfScale + ",64,1,67,1,96,1,121,1" + flip + txtWarp;
+
 				obj = obj + ";" + box + ";" + txt;
 			}
 		};
+
 		replaceModifiers(levelStringSplit1);
 		replaceModifiers(levelStringSplit2);
 	}
