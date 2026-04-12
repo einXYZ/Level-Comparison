@@ -5,6 +5,7 @@ Features:
     - Changed default font to Font 1
     - Removed successful popup after creating the comparison
     - Scene now automatically switches to the created level (just like when cloning a level)
+    - Duplicate portals will be reduced to one uncolored portal
 Bugfixes:
     - Fixed F-blocks not counting towards gameplay objects
 
