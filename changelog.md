@@ -1,3 +1,9 @@
+# v1.0.0
+- Major release update!
+Features:
+Bugfixes:
+    - Fixed saws 397-399 not getting replaced with their colored version
+
 # v0.5.1
 - Bugfix Update
 Bugfixes:
