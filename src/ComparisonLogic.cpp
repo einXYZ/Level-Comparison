@@ -179,6 +179,11 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						noEffects = true;
 						if (config.objectOptions.noEffects) newObjectStr += "116,1,";
 						continue;
+					case 121:
+						newObjectStr = "";
+						isDecoration = true;
+						objectStr = "";
+						break;
 					case 135:
 						if (!config.unhide.unhideHide)
 							newObjectStr += pair[0] + "," + pair[1] + ",";

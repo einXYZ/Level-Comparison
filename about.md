@@ -30,6 +30,6 @@ When using the menu from the level browser you can freely select both levels.
 Sometimes saved levels are not downloaded yet, pressing create again will fix this issue.
 
 ## Issues
-If you have any problems with the mod, feel free to create an [Issue](https://github.com/einXYZ/Level-Comparison/issues) on Github or send me a [Discord](https://discord.com/users/470965127231832064") dm.
+If you have any problems with the mod, feel free to create an [Issue](https://github.com/einXYZ/Level-Comparison/issues) on Github or send me a [Discord](https://discord.com/users/470965127231832064) dm.
 
 Also this is my first Geode mod :D 

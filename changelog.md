@@ -1,3 +1,10 @@
+# v1.1.0
+- Minor update
+Features:
+    - Created levels now get stored just like online levels
+    - Added Editor Level ID API dependency
+    - Objects with NoTouch option now also get deleted
+
 # v1.0.0
 - Major release update!
 Features:

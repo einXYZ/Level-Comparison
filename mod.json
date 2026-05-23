@@ -8,7 +8,7 @@
 	},
 	"id": "fullsound.level-comparison",
 	"name": "Level Comparison",
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"developer": "FullSound",
 	"description": "Tool for automatic level comparison creating",
 	"resources": {
@@ -28,6 +28,7 @@
 		"community": "https://discord.com/users/470965127231832064"
 	},
 	"dependencies": {
-		"geode.node-ids": ">=1.23.0"
+		"geode.node-ids": ">=1.23.0",
+		"cvolton.level-id-api": ">=2.0.0"
 	}
 }

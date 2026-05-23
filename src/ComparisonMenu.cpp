@@ -1,6 +1,8 @@
 #include "ComparisonMenu.hpp"
 #include "utils.hpp"
 
+#include <cvolton.level-id-api/include/EditorIDs.hpp>
+
 using namespace geode::prelude;
 using namespace lc;
 
@@ -33,6 +35,16 @@ bool ComparisonMenu::init() {
     sawRotationSpeed = mod->getSavedValue<float>("saw-rotation-speed", 0.f);
     for (auto& b : savedBools) *getBoolPtr(b.key) = mod->getSavedValue<bool>(b.key, b.defaultValue);
 
+    bool level1IsEditor = mod->getSavedValue<bool>("source-level-editor", false);
+    bool level2IsEditor = mod->getSavedValue<bool>("target-level-editor", false);
+
+    auto findEditorLevel = [](int editorID) -> GJGameLevel* {
+        for (auto lvl : CCArrayExt<GJGameLevel*>(LocalLevelManager::get()->m_localLevels)) {
+            if (EditorIDs::getID(lvl, false) == editorID) return lvl;
+        }
+        return nullptr;
+    };
+
     auto panel = CCLayerColor::create({ 0, 0, 0, 0 });
     panel->setContentSize({ 380.f, 280.f });
     panel->setID("create-comparison-background"_spr);
@@ -61,11 +73,18 @@ bool ComparisonMenu::init() {
         level1Input->setMaxCharCount(10);
         level1Input->setFilter("0123456789");
         level1Input->setEnabled(true);
-        level1Input->setString(level1ID != 0 ? std::to_string(level1ID).c_str() : "");
         level1Input->setCallback([this](std::string const& text) {
             level1ID = text.empty() ? 0 : lc::stoi(const_cast<std::string&>(text));
             m_pickedLevel1 = nullptr;
         });
+
+        if (level1IsEditor && level1ID != 0) {
+            m_pickedLevel1 = findEditorLevel(level1ID);
+            level1Input->setEnabled(false);
+            level1Input->setString(fmt::format("({})", level1ID).c_str());
+        } else 
+            level1Input->setString(level1ID != 0 ? std::to_string(level1ID).c_str() : "");
+
         auto pickSpr1 = CCSprite::createWithSpriteFrameName("GJ_plusBtn_001.png");
         pickSpr1->setScale(0.5f);
         auto pickBtn1 = CCMenuItemSpriteExtra::create(pickSpr1, this, menu_selector(ComparisonMenu::onPickLevel1));
@@ -83,13 +102,20 @@ bool ComparisonMenu::init() {
     level2Input->setMaxCharCount(10);
     level2Input->setFilter("0123456789");
     level2Input->setPosition({ 80.f, 165.f });
-    level2Input->setEnabled(true);
     level2Input->setID("level-id-input"_spr);
-    level2Input->setString(level2ID != 0 ? std::to_string(level2ID).c_str() : "");
     level2Input->setCallback([this](std::string const& text) {
         level2ID = text.empty() ? 0 : lc::stoi(const_cast<std::string&>(text));
         m_pickedLevel2 = nullptr;
     });
+
+    if (level2IsEditor && level2ID != 0) {
+        m_pickedLevel2 = findEditorLevel(level2ID);
+        level2Input->setEnabled(false);
+        level2Input->setString(fmt::format("({})", level2ID).c_str());
+    } else {
+        level2Input->setEnabled(true);
+        level2Input->setString(level2ID != 0 ? std::to_string(level2ID).c_str() : "");
+    }
     panel->addChild(level2Input);
 
     m_applyColors = [this]() {
@@ -372,8 +398,15 @@ void ComparisonMenu::onPickLevel1(CCObject*) {
     LevelPickerPopup::create([this](GJGameLevel* level) {
         m_pickedLevel1 = level;
         level1ID = level->m_levelID;
-        if (level1Input) level1Input->setString(std::to_string(level1ID).c_str());
-        if (level->m_levelNotDownloaded || level->m_levelString.empty())
+        bool isEditor = level->m_levelType == GJLevelType::Editor;
+        if (level1Input) {
+            level1Input->setEnabled(!isEditor);
+            level1Input->setString(isEditor
+                ? fmt::format("({})", EditorIDs::getID(level)).c_str()
+                : std::to_string(level1ID).c_str()
+            );
+        }
+        if (!isEditor && (level->m_levelNotDownloaded || level->m_levelString.empty()))
             GameLevelManager::sharedState()->downloadLevel(level1ID, false, 0);
     })->show();
 }
@@ -382,8 +415,15 @@ void ComparisonMenu::onPickLevel2(CCObject*) {
     LevelPickerPopup::create([this](GJGameLevel* level) {
         m_pickedLevel2 = level;
         level2ID = level->m_levelID;
-        if (level2Input) level2Input->setString(std::to_string(level2ID).c_str());
-        if (level->m_levelNotDownloaded || level->m_levelString.empty())
+        bool isEditor = level->m_levelType == GJLevelType::Editor;
+        if (level2Input) {
+            level2Input->setEnabled(!isEditor);
+            level2Input->setString(isEditor
+                ? fmt::format("({})", EditorIDs::getID(level)).c_str()
+                : std::to_string(level2ID).c_str()
+            );
+        }
+        if (!isEditor && (level->m_levelNotDownloaded || level->m_levelString.empty()))
             GameLevelManager::sharedState()->downloadLevel(level2ID, false, 0);
     })->show();
 }
@@ -432,7 +472,7 @@ void ComparisonMenu::onCreate(CCObject*) {
         return;
     }
 
-    if (!m_fixedLevel1 && (level1->m_levelNotDownloaded || level1->m_levelString.empty())) {
+    if (!m_fixedLevel1 && level1->m_levelType != GJLevelType::Editor && (level1->m_levelNotDownloaded || level1->m_levelString.empty())) {
         glm->downloadLevel(level1ID, false, 0);
         FLAlertLayer::create(
             "Level 1 not downloaded",
@@ -442,7 +482,7 @@ void ComparisonMenu::onCreate(CCObject*) {
         return;
     }
 
-    if (level2->m_levelNotDownloaded || level2->m_levelString.empty()) {
+    if (level2->m_levelType != GJLevelType::Editor && (level2->m_levelNotDownloaded || level2->m_levelString.empty())) {
         glm->downloadLevel(level2ID, false, 0);
         FLAlertLayer::create(
             "Level 2 not downloaded",
@@ -453,8 +493,10 @@ void ComparisonMenu::onCreate(CCObject*) {
     }
 
     auto mod = Mod::get();
-    mod->setSavedValue("source-level-id", level1ID);
-    mod->setSavedValue("target-level-id", level2ID);
+    mod->setSavedValue("source-level-id", level1->m_levelType == GJLevelType::Editor ? EditorIDs::getID(level1) : level1ID);
+    mod->setSavedValue("source-level-editor", level1->m_levelType == GJLevelType::Editor);
+    mod->setSavedValue("target-level-id", level2->m_levelType == GJLevelType::Editor ? EditorIDs::getID(level2) : level2ID);
+    mod->setSavedValue("target-level-editor", level2->m_levelType == GJLevelType::Editor);
     mod->setSavedValue("saw-rotation-speed", sawRotationSpeed);
     for (auto& b : savedBools) mod->setSavedValue(b.key, *getBoolPtr(b.key));
 
