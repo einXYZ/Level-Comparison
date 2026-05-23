@@ -3,12 +3,63 @@
 #include <map>
 #include <string>
 
+struct UnhideOptions {
+    bool unhideAlpha;
+    bool unhideHide;
+};
+
+struct ModifierOptions {
+    bool showDBlocks;
+    bool showJBlocks;
+    bool showSBlocks;
+    bool showHBlocks;
+    bool showFBlocks;
+};
+
+struct ObjectOptions {
+    bool dontFade;
+    bool dontEnter;
+    bool noEffects;
+    bool noGlow;
+    bool noParticle;
+    bool noAudioScale;
+};
+
 struct ComparisonConfig {
-    bool isBuffed;
+    bool level1Buffed;
     float sawSpeed;
     bool remapGroups;
-    bool unhideObjects;
-    bool showModifiers;
+    bool replaceDisappearing;
+    UnhideOptions unhide;
+    ModifierOptions modifiers;
+    ObjectOptions objectOptions;
+};
+
+struct SavedBool {
+    const char* key;
+    bool defaultValue;
+};
+
+inline SavedBool savedBools[] = {
+    { "is-buffed", false },
+    { "remap-groups", false },
+    { "unhide-enabled", false },
+    { "modifiers-enabled", false },
+    { "object-options-enabled", false },
+    { "replace-disappearing", false },
+    { "unhide-alpha", true },
+    { "unhide-hide", true },
+    { "show-dblocks", false },
+    { "show-jblocks", false },
+    { "show-sblocks", false },
+    { "show-hblocks", false },
+    { "show-fblocks", false },
+    { "dont-fade", false },
+    { "dont-enter", false },
+    { "no-effects", false },
+    { "no-glow", false },
+    { "no-particle", false },
+    { "no-audio-scale", false },
 };
 
 inline std::vector<int> groupKeys = {
@@ -26,9 +77,12 @@ inline std::vector<int> objects = {
 };
 
 inline std::vector<std::vector<int>> blackObjects = {
-    {9, 1715}, {61, 1719}, {88, 1705}, {89, 1706}, {98, 1707}, {135, 1712}, {243, 1720}, {244, 1721}, {363, 1717}, {364, 1718}, {365, 1716}, {366, 1723}, {367, 1724}, {397, 1708}, {398, 1709}, {399, 1710}, {421, 1725}, {422, 1726}, {446, 1728}, {447, 1729},
+    {9, 1715}, {61, 1719}, {88, 1705}, {89, 1706}, {98, 1707}, {135, 1712}, {243, 1720}, {244, 1721}, {363, 1717}, {364, 1718}, {365, 1716}, {366, 1723}, {367, 1724}, {368, 1722}, {397, 1708}, {398, 1709}, {399, 1710}, {421, 1725}, {422, 1726}, {446, 1728}, {447, 1729}, {667, 1730}, {720, 1731}, {768, 1727}, {989, 1732}
 };
 
 inline std::vector<int> portals = {
     10, 11, 12, 13, 45, 46, 47, 99, 101, 111, 286, 287, 660, 745, 747, 749, 1331, 1933, 2064, 2902, 2926
 };
+
+inline std::vector<int> disappearingObjects = {
+    144, 145, 146, 147, 204, 205, 206, 459, 673, 674, 740, 741, 742, 1341, 1342, 1344, 1345 };

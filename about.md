@@ -1,14 +1,16 @@
-# Level Comparison (beta)
+# Level Comparison
 
 Create your own level comparisons by using the menu button on the level page!
 
 ## Features
-- Set ID of level to be compared to
-- Select buffed/nerfed role
+- Select created or saved level with level selector
+- Switch buffed/nerfed level
 - Set saw rotation speed
-- Toggle remapping groups
-- Toggle unhide invisible
-- Toggle show modifiers (D-blocks etc.)
+- Option to unhide objects
+- Option show modifier blocks such as D-blocks etc.
+- Option to apply specific object options to all objects such as NoGlow etc.
+- Option to remap groups
+- Option do replace disappearing objects with their visible counterparts
 - Create the level; The mod automatically:
     - Removes all deco
     - Divide the two levels to layers 1 and 2
@@ -16,14 +18,18 @@ Create your own level comparisons by using the menu button on the level page!
     - Replace black objects with their colored version
 
 ## How to use
-- Go to any online level
+- Go to any online level, created level or level browser
 - Find the mod button on the left menu
 ![Comparison button](images/comparison_button.png)
-Unfortunately you can only compare two online levels, as I am still thinking of a way to make it more flexible.
+When using the menu from the level browser you can freely select both levels.
+
 ## Special thanks
-... to [LeTim [GD]](https://www.youtube.com/@LeTim) for the idea to build the mod!
+... to [LeTim [GD]](https://www.youtube.com/@LeTim) for the idea to build the mod! Also thanks to [Exiled_Shade](https://www.youtube.com/@exiled_shadegd) for testing and feedback.
 
 ## Note
-This mod is still in development so bug can still occur. Feel free to report them by creating an Issue on Github.
+Sometimes saved levels are not downloaded yet, pressing create again will fix this issue.
 
-Also this is my first Geode mod :D
+## Issues
+If you have any problems with the mod, feel free to create an [Issue](https://github.com/einXYZ/Level-Comparison/issues) on Github or send me a [Discord](https://discord.com/users/470965127231832064") dm.
+
+Also this is my first Geode mod :D 

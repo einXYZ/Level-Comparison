@@ -1,8 +1,16 @@
 # v1.0.0
 - Major release update!
 Features:
+    - Complete UI overhaul
+    - Added level selector for created and saved levels
+    - Simplified buffed/nerfed role with label colors and switch button
+    - Added toggle Object Options
+    - Added toggle Replace Disappearing
+    - Added sub settings for Unhide, Modifiers and Object Options
+    - Added Comparison button in the level browser and created levels
+    - Added ability to choose both levels from the selector when using from level browser
 Bugfixes:
-    - Fixed saws 397-399 not getting replaced with their colored version
+    - Fixed some saws and spikes not getting replaced with their colored version
 
 # v0.5.1
 - Bugfix Update

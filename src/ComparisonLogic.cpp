@@ -10,10 +10,10 @@ using namespace lc;
 
 std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const ComparisonConfig& config) {
 	std::vector<GJGameLevel*> levels = { level1, level2 };
-	bool first = !config.isBuffed;
+	bool first = !config.level1Buffed;
 	std::vector<std::string> levelStringSplit1, levelStringSplit2;
 	std::string firstElement;
-	const std::string kS38 = "kS38,1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1000_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1001_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1009_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1002_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1013_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1014_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1005_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1006_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1004_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1007_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1003_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1012_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1010_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1011_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1_5_1_7_1.000000_15_1.000000_9_3_10_180.000000a1.000000a1.000000a1a1_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_2_5_1_7_1.000000_15_1.000000_9_3_10_0.000000a1.000000a1.000000a1a1_18_0_8_1|,";
+	const std::string kS38 = "kS38,1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1000_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1001_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1009_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1002_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1013_7_1.000000_15_1.000000_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_1014_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1005_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1006_5_1_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1004_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1007_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1003_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1012_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1010_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1011_7_1.000000_15_1.000000_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_1_5_1_7_1.000000_15_1.000000_9_3_10_180.000000a1.000000a1.000000a1a1_18_0_8_1|1_255_2_255_3_255_11_255_12_255_13_255_4_-1_6_2_5_1_7_1.000000_15_1.000000_9_3_10_0.000000a1.000000a1.000000a1a1_18_0_8_1|1_0_2_0_3_0_11_255_12_255_13_255_4_-1_6_4_5_1_7_1.000000_15_1.000000_18_0_8_1|,";
 
 	std::map<int, int> groupRemap;
 	if (config.remapGroups) {
@@ -53,10 +53,15 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 		}
 	}
 	std::vector<int> effectiveObjects = objects;
-	if (!config.unhideObjects) effectiveObjects.push_back(1007);
+	if (!config.unhide.unhideAlpha) effectiveObjects.push_back(1007);
 
-	if (config.showModifiers)
-		for (const auto& kv : modifierLetters) effectiveObjects.push_back(kv.first);
+	std::set<int> enabledModifiers;
+	if (config.modifiers.showDBlocks) enabledModifiers.insert(1755);
+	if (config.modifiers.showJBlocks) enabledModifiers.insert(1813);
+	if (config.modifiers.showSBlocks) enabledModifiers.insert(1829);
+	if (config.modifiers.showHBlocks) enabledModifiers.insert(1859);
+	if (config.modifiers.showFBlocks) enabledModifiers.insert(2866);
+	for (int id : enabledModifiers) effectiveObjects.push_back(id);
 
 	int levelIndex = 0;
 
@@ -69,6 +74,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 
 		for (std::string& objectStr : levelStringSplit) {
 			bool isDecoration = false;
+			bool isDisappearing = false;
 			bool hasLayer1 = false;
 			bool hasColor1 = false;
 			bool hasColor2 = false;
@@ -79,6 +85,8 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			bool customRotationSpeed = false;
 			bool disableRotation = false;
 			bool noParticle = false;
+			bool noEffects = false;
+			bool noAudioScale = false;
 			std::string newObjectStr = "";
 
 			std::vector<std::string> splitStrings = splitString(objectStr, ",", true);
@@ -103,6 +111,15 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 								objID = objPair[1];
 								pair[1] = std::to_string(objID);
 								break;
+							}
+						}
+
+						if (config.replaceDisappearing) {
+							for (int id : disappearingObjects) {
+								if (id == objID) {
+									isDisappearing = true;
+									break;
+								}
 							}
 						}
 
@@ -138,15 +155,15 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						continue;
 					case 64:
 						dontFade = true;
-						newObjectStr += "64,1,";
+						if (config.objectOptions.dontFade) newObjectStr += "64,1,";
 						continue;
 					case 67:
 						dontEnter = true;
-						newObjectStr += "67,1,";
+						if (config.objectOptions.dontEnter) newObjectStr += "67,1,";
 						continue;
 					case 96:
 						noGlow = true;
-						newObjectStr += "96,1,";
+						if (config.objectOptions.noGlow) newObjectStr += "96,1,";
 						continue;
 					case 97:
 						customRotationSpeed = true;
@@ -158,14 +175,21 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						continue;
 					case 103:
 						continue;
+					case 116:
+						noEffects = true;
+						if (config.objectOptions.noEffects) newObjectStr += "116,1,";
+						continue;
 					case 135:
-						if (!config.unhideObjects) {
+						if (!config.unhide.unhideHide)
 							newObjectStr += pair[0] + "," + pair[1] + ",";
-						}
+						continue;
+					case 372:
+						noAudioScale = true;
+						if (config.objectOptions.noAudioScale) newObjectStr += "372,1,";
 						continue;
 					case 507:
 						noParticle = true;
-						newObjectStr += "507,1,";
+						if (config.objectOptions.noParticle) newObjectStr += "507,1,";
 						continue;
 					case 33: case 51: case 71: case 76: case 108:
 					case 395: case 448: case 455: case 457:
@@ -207,15 +231,19 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			if (!hasColor1) { first ? newObjectStr += "21,1," : newObjectStr += "21,2,"; }
 			if (!hasColor2) { first ? newObjectStr += "22,1," : newObjectStr += "22,2,"; }
 			if (!hasLayer2) { first ? newObjectStr += "61,1," : newObjectStr += "61,2,"; }
-			if (!dontFade) newObjectStr += "64,1,";
-			if (!dontEnter) newObjectStr += "67,1,";
-			if (!noGlow) newObjectStr += "96,1,";
+			if (!dontFade) { if (config.objectOptions.dontFade) newObjectStr += "64,1,"; }
+			if (!dontEnter) { if (config.objectOptions.dontEnter) newObjectStr += "67,1,"; }
+			if (!noGlow) { if (config.objectOptions.noGlow) newObjectStr += "96,1,"; }
 			if (!customRotationSpeed) { if (config.sawSpeed != 0) newObjectStr += "97," + std::to_string(config.sawSpeed) + ".000000,"; }
 			if (!disableRotation) { if (config.sawSpeed == 0) newObjectStr += "98,1,"; }
-			if (!noParticle) newObjectStr += "507,1,";
+			if (!noEffects) { if (config.objectOptions.noEffects) newObjectStr += "116,1,"; }
+			if (!noParticle) { if (config.objectOptions.noParticle) newObjectStr += "507,1,"; }
+			if (!noAudioScale) { if (config.objectOptions.noAudioScale) newObjectStr += "372,1,"; }
 
 			if (!newObjectStr.empty()) {
 				newObjectStr.pop_back();
+				if (isDisappearing)
+					newObjectStr = replaceDisappearing(newObjectStr);
 				objectStr = newObjectStr;
 			} else {
 				objectStr = "";
@@ -279,7 +307,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 		}
 	}
 
-	if (config.showModifiers) {
+	if (!enabledModifiers.empty()) {
 		static const auto keyValueIfSet = [](int key, const std::string& val) {
 			return val.empty() ? "" : "," + std::to_string(key) + "," + val;
 		};
@@ -310,7 +338,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 					}
 				}
 
-				if (!modifierLetters.count(objID)) continue;
+				if (!enabledModifiers.count(objID)) continue;
 
 				float baseScale = scale.empty() ? 1.f : lc::stof(scale);
 				std::string halfScale = fmt::format("{:.6f}", baseScale * 0.5f);
@@ -380,4 +408,61 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 
 	std::string modifiedLevelString = newFirstElement + ";" + joinString(levelStringSplit1, ";") + ";" + joinString(levelStringSplit2, ";");
 	return modifiedLevelString;
+}
+
+std::string replaceDisappearing(const std::string& objStr) {
+    std::vector<std::string> tokens = splitString(objStr, ",", true);
+
+    int objID = 0;
+    for (int i = 0; i + 1 < (int)tokens.size(); i += 2) {
+        if (stoi(tokens[i]) == 1) { objID = stoi(tokens[i + 1]); break; }
+    }
+
+    int newID = 0;
+    bool blackBlending = false;
+
+    switch (objID) {
+        case 144: newID = 216; blackBlending = true; break;
+        case 205: newID = 217; blackBlending = true; break;
+        case 145: newID = 218; blackBlending = true; break;
+        case 459: newID = 458; blackBlending = true; break;
+        case 147: newID = 215; blackBlending = true; break;
+        case 204: newID = 219; blackBlending = true; break;
+        case 146: newID = 467; break;
+        case 206: newID = 661; break;
+        case 673: newID = 1338; break;
+        case 674: newID = 1339; break;
+        case 1341: newID = 1338; break;
+        case 1342: newID = 1339; break;
+        case 1344: newID = 1338; break;
+        case 1345: newID = 1339; break;
+        case 740: newID = 186; break;
+        case 741: newID = 187; break;
+        case 742: newID = 188; break;
+        default: return objStr;
+    }
+
+    std::string result;
+    bool hasColor2 = false;
+
+    for (int i = 0; i + 1 < (int)tokens.size(); i += 2) {
+        int k = stoi(tokens[i]);
+        if (k == 1) {
+            result += "1," + std::to_string(newID) + ",";
+        } else if (k == 22) {
+            hasColor2 = true;
+            if (blackBlending)
+                result += "22,4,";
+            else
+                result += "22," + tokens[i + 1] + ",";
+        } else {
+            result += tokens[i] + "," + tokens[i + 1] + ",";
+        }
+    }
+
+    if (!hasColor2 && blackBlending)
+        result += "22,4,";
+
+    if (!result.empty()) result.pop_back();
+    return result;
 }
