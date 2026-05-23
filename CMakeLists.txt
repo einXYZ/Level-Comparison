@@ -28,4 +28,4 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} $ENV{GEODE_SDK}/build)
 
-setup_geode_mod(${PROJECT_NAME} EXTERNALS geode.node-ids:1.23.0 cvolton.level-id-api:2.0.0)
+setup_geode_mod(${PROJECT_NAME} EXTERNALS geode.node-ids:1.23.0)
