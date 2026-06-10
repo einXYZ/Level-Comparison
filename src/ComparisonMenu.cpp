@@ -67,7 +67,11 @@ bool ComparisonMenu::init() {
     level1Input->setPosition({ 80.f, 215.f });
 
     if (m_fixedLevel1) {
-        level1Input->setString(std::to_string(m_fixedLevel1->m_levelID).c_str());
+        bool isEditor = m_fixedLevel1->m_levelType == GJLevelType::Editor;
+        level1Input->setString(isEditor
+            ? fmt::format("({})", EditorIDs::getID(m_fixedLevel1)).c_str()
+            : std::to_string(m_fixedLevel1->m_levelID).c_str()
+        );
         level1Input->setEnabled(false);
     } else {
         level1Input->setMaxCharCount(10);

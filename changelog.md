@@ -1,3 +1,10 @@
+# v1.1.1
+- Minor update
+Features:
+    - Duplicate orbs now get reduced to a single uncolored one (just like portals did)
+Bugfixes:
+    - Fixed Level 1 ID showing 0 when using the mod from created levels
+
 # v1.1.0
 - Minor update
 Features:

@@ -10,7 +10,7 @@ Create your own level comparisons by using the menu button on the level page!
 - Option show modifier blocks such as D-blocks etc.
 - Option to apply specific object options to all objects such as NoGlow etc.
 - Option to remap groups
-- Option do replace disappearing objects with their visible counterparts
+- Option to replace disappearing objects with their visible counterparts
 - Create the level; The mod automatically:
     - Removes all deco
     - Divide the two levels to layers 1 and 2
