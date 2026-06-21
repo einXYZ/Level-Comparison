@@ -1,3 +1,8 @@
+# v1.1.2
+- Minor update
+Features:
+    - Force blocks also get reduced to a single one
+
 # v1.1.1
 - Minor update
 Features:
