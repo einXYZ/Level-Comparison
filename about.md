@@ -6,16 +6,17 @@ Create your own level comparisons by using the menu button on the level page!
 - Select created or saved level with level selector
 - Switch buffed/nerfed level
 - Set saw rotation speed
-- Option to unhide objects
+- Option to unhide objects (remove alpha triggers and/or Hide option)
 - Option show modifier blocks such as D-blocks etc.
 - Option to apply specific object options to all objects such as NoGlow etc.
 - Option to remap groups
 - Option to replace disappearing objects with their visible counterparts
 - Create the level; The mod automatically:
     - Removes all deco
-    - Divide the two levels to layers 1 and 2
-    - Adjust all color channels
-    - Replace black objects with their colored version
+    - Divides the two levels to layers 1 and 2
+    - Reduces same portals, orbs and force blocks on both versions (layer 3)
+    - Adjusts all color channels
+    - Replaces black objects with their colored version
 
 ## How to use
 - Go to any online level, created level or level browser

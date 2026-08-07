@@ -1,5 +1,5 @@
 {
-	"geode": "5.7.1",
+	"geode": "5.8.2",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
@@ -8,7 +8,7 @@
 	},
 	"id": "fullsound.level-comparison",
 	"name": "Level Comparison",
-	"version": "v1.1.2",
+	"version": "v1.1.3",
 	"developer": "FullSound",
 	"description": "Tool for automatic level comparison creating",
 	"resources": {

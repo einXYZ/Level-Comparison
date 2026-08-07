@@ -1,3 +1,11 @@
+# v1.1.3
+- Minor update
+Features:
+    - Reduced objects are moved to editor layer 3
+    - Updated mod description
+Bugfixes:
+    - Fixed crash when comparing freshly created level
+
 # v1.1.2
 - Minor update
 Features:

@@ -23,6 +23,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 		auto collectGroups = [&](GJGameLevel* lvl, std::set<int>& outSet) {
 			std::string ls = ZipUtils::decompressString(lvl->m_levelString, false, 0);
 			std::vector<std::string> parts = splitString(ls, ";", true);
+			if (parts.empty()) return;
 			parts.erase(parts.begin());
 			for (std::string& obj : parts) {
 				std::vector<std::string> tokens = splitString(obj, ",", true);
@@ -69,8 +70,8 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 		bool isSecondLevel = (levelIndex == 1);
 		std::string levelString = ZipUtils::decompressString(level->m_levelString, false, 0);
 		std::vector<std::string> levelStringSplit = splitString(levelString, ";", true);
-		firstElement = levelStringSplit.front();
-		levelStringSplit.erase(levelStringSplit.begin());
+		firstElement = levelStringSplit.empty() ? "" : levelStringSplit.front();
+		if (!levelStringSplit.empty()) levelStringSplit.erase(levelStringSplit.begin());
 
 		for (std::string& objectStr : levelStringSplit) {
 			bool isDecoration = false;
@@ -151,7 +152,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						continue;
 					case 61:
 						hasLayer2 = true;
-						first ? newObjectStr += "61,1," : newObjectStr += "61,2,";
+						newObjectStr += "61,0,";
 						continue;
 					case 64:
 						dontFade = true;
@@ -235,7 +236,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			if (!hasLayer1) { first ? newObjectStr += "20,1," : newObjectStr += "20,2,"; }
 			if (!hasColor1) { first ? newObjectStr += "21,1," : newObjectStr += "21,2,"; }
 			if (!hasColor2) { first ? newObjectStr += "22,1," : newObjectStr += "22,2,"; }
-			if (!hasLayer2) { first ? newObjectStr += "61,1," : newObjectStr += "61,2,"; }
+			if (!hasLayer2) { newObjectStr += "61,0,"; }
 			if (!dontFade) { if (config.objectOptions.dontFade) newObjectStr += "64,1,"; }
 			if (!dontEnter) { if (config.objectOptions.dontEnter) newObjectStr += "67,1,"; }
 			if (!noGlow) { if (config.objectOptions.noGlow) newObjectStr += "96,1,"; }
