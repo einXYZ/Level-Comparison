@@ -1,3 +1,8 @@
+# v1.1.4
+- Bugfix Update
+Bugfixes:
+    - Fixed object 135 being replaced with wrong hitbox equivalent
+
 # v1.1.3
 - Minor update
 Features:
