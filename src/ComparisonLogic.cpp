@@ -88,6 +88,8 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			bool noParticle = false;
 			bool noEffects = false;
 			bool noAudioScale = false;
+			bool isEffectDecoration = false;
+			bool hasHide = false;
 			std::string newObjectStr = "";
 
 			std::vector<std::string> splitStrings = splitString(objectStr, ",", true);
@@ -100,11 +102,23 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 				int propID = stoi(pair[0]);
 
 				if (propID == 1) {
-					if (std::find(effectiveObjects.begin(), effectiveObjects.end(), stoi(pair[1])) == effectiveObjects.end()) {
+					bool isEffective = std::find(effectiveObjects.begin(), effectiveObjects.end(), stoi(pair[1])) != effectiveObjects.end();
+					bool hasGroup = false;
+					if (!isEffective) {
+						for (std::vector<std::string>& groupPair : splitStringsPairs) {
+							int groupKey = stoi(groupPair[0]);
+							if (groupKey == 57 || groupKey == 274 || groupKey == 442) {
+								hasGroup = true;
+								break;
+							}
+						}
+					}
+					if (!isEffective && !hasGroup) {
 						isDecoration = true;
 						objectStr = "";
 						break;
 					} else {
+						if (!isEffective && hasGroup) isEffectDecoration = true;
 						int objID = stoi(pair[1]);
 
 						for (const auto& objPair : blackObjects) {
@@ -186,6 +200,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						objectStr = "";
 						break;
 					case 135:
+						hasHide = true;
 						if (!config.unhide.unhideHide)
 							newObjectStr += pair[0] + "," + pair[1] + ",";
 						continue;
@@ -245,6 +260,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			if (!noEffects) { if (config.objectOptions.noEffects) newObjectStr += "116,1,"; }
 			if (!noParticle) { if (config.objectOptions.noParticle) newObjectStr += "507,1,"; }
 			if (!noAudioScale) { if (config.objectOptions.noAudioScale) newObjectStr += "372,1,"; }
+			if (isEffectDecoration && !hasHide) { newObjectStr += "135,1,"; }
 
 			if (!newObjectStr.empty()) {
 				newObjectStr.pop_back();
