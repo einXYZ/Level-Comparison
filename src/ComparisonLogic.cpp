@@ -107,7 +107,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 					if (!isEffective) {
 						for (std::vector<std::string>& groupPair : splitStringsPairs) {
 							int groupKey = stoi(groupPair[0]);
-							if (groupKey == 57 || groupKey == 274 || groupKey == 442) {
+							if (groupKey == 57 || groupKey == 274) {
 								hasGroup = true;
 								break;
 							}

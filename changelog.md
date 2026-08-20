@@ -1,3 +1,8 @@
+# v1.1.5
+- Bugfix Update
+Bugfixes:
+    - Decoration objects with groups assigned now only get hidden. This lead to some triggers breaking (i.e. rotate trigger center id).
+
 # v1.1.4
 - Bugfix Update
 Bugfixes:
