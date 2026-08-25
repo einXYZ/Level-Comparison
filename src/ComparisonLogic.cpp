@@ -90,6 +90,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			bool noAudioScale = false;
 			bool isEffectDecoration = false;
 			bool hasHide = false;
+			bool isColorTrigger = false;
 			std::string newObjectStr = "";
 
 			std::vector<std::string> splitStrings = splitString(objectStr, ",", true);
@@ -113,6 +114,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 							}
 						}
 					}
+					isColorTrigger = std::find(colorTriggers.begin(), colorTriggers.end(), stoi(pair[1])) != colorTriggers.end();
 					if (!isEffective && !hasGroup) {
 						isDecoration = true;
 						objectStr = "";
@@ -160,9 +162,30 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						hasColor2 = true;
 						first ? newObjectStr += "22,1," : newObjectStr += "22,2,";
 						continue;
+					case 23:
+						if (isColorTrigger && isEffectDecoration) {
+							newObjectStr += "23,67,";
+							continue;
+						}
+						newObjectStr += pair[0] + "," + pair[1] + ",";
+						continue;
 					case 43:
 						continue;
 					case 44:
+						continue;
+					case 51:
+						if (isColorTrigger && isEffectDecoration) {
+							newObjectStr += "51,67,";
+							continue;
+						}
+						if (config.remapGroups && isSecondLevel && !groupRemap.empty()) {
+							int val = stoi(pair[1]);
+							if (val > 0 && groupRemap.count(val)) {
+								newObjectStr += pair[0] + "," + std::to_string(groupRemap[val]) + ",";
+								continue;
+							}
+						}
+						newObjectStr += pair[0] + "," + pair[1] + ",";
 						continue;
 					case 61:
 						hasLayer2 = true;
@@ -212,7 +235,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						noParticle = true;
 						if (config.objectOptions.noParticle) newObjectStr += "507,1,";
 						continue;
-					case 33: case 51: case 71: case 76: case 108:
+					case 33: case 71: case 76: case 108:
 					case 395: case 448: case 455: case 457:
 					case 516: case 517: case 518: case 519:
 						if (config.remapGroups && isSecondLevel && !groupRemap.empty()) {

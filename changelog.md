@@ -1,3 +1,8 @@
+# v1.1.6
+- Bugfix Update
+Bugfixes:
+    - Color, pulse and alpha triggers with group ids don't get deleted anymore. They get remapped to an unused color/group id instead.
+
 # v1.1.5
 - Bugfix Update
 Bugfixes:

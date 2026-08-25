@@ -68,6 +68,8 @@ inline std::vector<int> groupKeys = {
 
 inline std::vector<int> portalCompareKeys = { 2, 3, 4, 5, 6, 32, 128, 129, 131, 132 };
 
+inline std::vector<int> colorTriggers = { 29, 30, 105, 744, 899, 915, 1006, 1007 };
+
 inline const std::map<int, std::string> modifierLetters = {
     {1755, "RA=="}, {1813, "Sg=="}, {1829, "Uw=="}, {1859, "SA=="}, {2866, "Rg=="}
 };
