@@ -2,6 +2,11 @@
 
 Create your own level comparisons by using the menu button on the level page!
 
+## Why using the mod?
+- You want to check a public start pos copy to not have altered gameplay
+- You like to see what changed in a level after an update
+- You *really* want to [compare Tidal Wave with Tidal Wave](https://www.youtube.com/shorts/mknxkcqGGs4)
+
 ## Features
 - Select created or saved level with level selector
 - Switch buffed/nerfed level
