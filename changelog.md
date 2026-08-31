@@ -1,3 +1,8 @@
+# v1.1.7
+- Bugfix Update
+Bugfixes:
+    - Fixed reduced objects not getting moved to layer 3
+
 # v1.1.6
 - Bugfix Update
 Bugfixes:

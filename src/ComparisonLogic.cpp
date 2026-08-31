@@ -342,6 +342,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 			std::vector<std::string> tokens = splitString(levelStringSplit1[e1.idx], ",", true);
 			for (int i = 0; i + 1 < static_cast<int>(tokens.size()); i += 2) {
 				int k = stoi(tokens[i]);
+				if (k == 20) { newPortalString += "20,3,"; continue; }
 				if (k == 21 || k == 22) continue;
 				newPortalString += tokens[i] + "," + tokens[i + 1] + ",";
 			}

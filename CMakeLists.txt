@@ -8,7 +8,7 @@ else()
 endif()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(LevelComparison VERSION 1.1.6)
+project(LevelComparison VERSION 1.1.7)
 
 file(GLOB_RECURSE SOURCES
 	src/*.cpp
