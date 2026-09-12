@@ -30,5 +30,34 @@
 	"dependencies": {
 		"geode.node-ids": ">=1.23.0",
 		"cvolton.level-id-api": ">=2.0.0"
+	},
+	"settings":{
+		"enabledZ": {
+			"type": "bool",
+			"default": false,
+			"name": "Z-Layer Settings",
+			"description": "Enable or disable the Z-Layer settings for the mod's buttons"
+		},
+		"Z-Layer-EditLevelLayer": {
+			"enable-if": "enabledZ",
+			"type": "int",
+			"default": 0,
+			"name": "Z-Layer of button in edit level screen",
+			"description": "The Z-Layer of the comparison layer. Higher values will be drawn on top of lower values."
+		},
+		"Z-Layer-LevelInfoLayer": {
+			"enable-if": "enabledZ",
+			"type": "int",
+			"default": 0,
+			"name": "Z-Layer of button in online level info screen",
+			"description": "The Z-Layer of the comparison layer. Higher values will be drawn on top of lower values."
+		},
+		"Z-Layer-LevelBrowserLayer": {
+			"enable-if": "enabledZ",
+			"type": "int",
+			"default": 0,
+			"name": "Z-Layer of button in level browser screen",
+			"description": "The Z-Layer of the comparison layer. Higher values will be drawn on top of lower values."
+		}
 	}
 }
