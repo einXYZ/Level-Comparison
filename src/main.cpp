@@ -2,6 +2,7 @@
 #include <Geode/modify/LevelInfoLayer.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
 #include <Geode/modify/EditLevelLayer.hpp>
+#include <Geode/utils/base64.hpp>
 #include "ComparisonMenu.hpp"
 #include "ComparisonLogic.hpp"
 
@@ -19,7 +20,7 @@ static void openComparisonMenu(CCNode* self, GJGameLevel* fixedLevel1) {
             GJGameLevel* newLevel = glm->createNewLevel();
             newLevel->m_levelName = "Unnamed comparison";
             newLevel->m_levelString = modifiedLevelString;
-            newLevel->m_levelDesc = ZipUtils::base64URLEncode(fmt::format(
+            newLevel->m_levelDesc = geode::utils::base64::encode(fmt::format(
                 "Comparison of {} by {} {} and {} by {} {}",
                 level1->m_levelName.c_str(),
                 level1->m_creatorName.c_str(),
