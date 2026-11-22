@@ -124,11 +124,13 @@ std::vector<GJGameLevel*> ComparisonLevelPickerPopup::getFilteredLevels() {
         for (auto level : CCArrayExt<GJGameLevel*>(LocalLevelManager::get()->m_localLevels))
             levels.push_back(level);
     } else {
+#ifndef GEODE_IS_IOS
         auto arr = GameLevelManager::sharedState()->getSavedLevels(false, 0);
         if (arr) {
             for (auto level : CCArrayExt<GJGameLevel*>(arr))
                 levels.push_back(level);
         }
+#endif
     }
 
     if (m_searchQuery.empty()) {
