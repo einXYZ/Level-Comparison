@@ -1,6 +1,6 @@
 # Level Comparison
 
-Create your own level comparisons by using the menu button on the level page!
+Create your own comparison level by using the menu button on the level page!
 
 ## Why using the mod?
 - You want to check a public start pos copy to not have altered gameplay
@@ -25,15 +25,16 @@ Create your own level comparisons by using the menu button on the level page!
 
 ## How to use
 - Go to any online level, created level or level browser
-- Find the mod button on the left menu
+- Find the mod button on the menu
 ![Comparison button](images/comparison_button.png)
 When using the menu from the level browser you can freely select both levels.
 
 ## Special thanks
 ... to [LeTim [GD]](https://www.youtube.com/@LeTim) for the idea to build the mod! Also thanks to [Exiled_Shade](https://www.youtube.com/@exiled_shadegd) for testing and feedback.
 
-## Note
-Sometimes saved levels are not downloaded yet, pressing create again will fix this issue.
+## Known problems
+- Sometimes saved levels are not downloaded yet, pressing create again will fix this issue.
+- When creating the level and playing it instantly, everything turns blue. Opening the editor once will fix this issue.
 
 ## Issues
 If you have any problems with the mod, feel free to create an [Issue](https://github.com/einXYZ/Level-Comparison/issues) on Github or send me a [Discord](https://discord.com/users/470965127231832064) dm.

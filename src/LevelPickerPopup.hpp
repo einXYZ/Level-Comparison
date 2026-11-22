@@ -19,11 +19,11 @@ private:
     void onSelectBtn(CCObject*);
 };
 
-class LevelPickerPopup : public geode::Popup {
+class ComparisonLevelPickerPopup : public geode::Popup {
 public:
     std::function<void(GJGameLevel*)> m_onSelect;
 
-    static LevelPickerPopup* create(std::function<void(GJGameLevel*)> onSelect);
+    static ComparisonLevelPickerPopup* create(std::function<void(GJGameLevel*)> onSelect);
     bool init() override;
 
 private:

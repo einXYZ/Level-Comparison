@@ -1,14 +1,14 @@
 {
-	"geode": "5.8.2",
+	"geode": "6.0.0-beta.1",
 	"gd": {
-		"win": "2.2081",
-		"android": "2.2081",
-		"mac": "2.2081",
-		"ios": "2.2081"
+		"win": "2.2091",
+		"android": "2.2091",
+		"mac": "2.2091",
+		"ios": "2.2091"
 	},
 	"id": "fullsound.level-comparison",
 	"name": "Level Comparison",
-	"version": "v1.1.7",
+	"version": "v1.1.8",
 	"developer": "FullSound",
 	"description": "Tool for automatic level comparison creating",
 	"resources": {
@@ -28,7 +28,7 @@
 		"community": "https://discord.com/users/470965127231832064"
 	},
 	"dependencies": {
-		"geode.node-ids": ">=1.23.0",
-		"cvolton.level-id-api": ">=2.0.0"
+		"geode.node-ids": ">=1.21.0-beta.1",
+		"cvolton.level-id-api": ">=2.1.0"
 	}
 }

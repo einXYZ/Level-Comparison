@@ -53,7 +53,7 @@ class $modify(MakeLevelInfoLayer, LevelInfoLayer) {
             CircleButtonSprite::createWithSpriteFrameName(
                 "create.png"_spr, .8f,
                 CircleBaseColor::Green,
-                CircleBaseSize::MediumAlt
+                CircleBaseSize::Medium
             ),
             this,
             menu_selector(MakeLevelInfoLayer::onButton)
@@ -110,13 +110,13 @@ class $modify(MakeLevelBrowserLayer, LevelBrowserLayer) {
             return false;
 
         bool usedFallback = false;
-        auto menu = this->getChildByID("my-levels-menu");
+        auto menu = this->getChildByID("bottom-left-menu");
         if (!menu) {
             menu = this->getChildByID("saved-menu");
             usedFallback = true;
         }
         if (!menu) {
-            log::error("my-levels-menu and saved-menu not found");
+            log::error("bottom-left-menu and saved-menu not found");
             return true;
         }
 
@@ -124,7 +124,7 @@ class $modify(MakeLevelBrowserLayer, LevelBrowserLayer) {
             CircleButtonSprite::createWithSpriteFrameName(
                 "create.png"_spr, .8f,
                 CircleBaseColor::Green,
-                usedFallback ? CircleBaseSize::Small : CircleBaseSize::MediumAlt
+                usedFallback ? CircleBaseSize::Small : CircleBaseSize::Tiny
             ),
             this,
             menu_selector(MakeLevelBrowserLayer::onButton)

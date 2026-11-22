@@ -1,7 +1,7 @@
 #include "ComparisonMenu.hpp"
 #include "utils.hpp"
 
-#include <cvolton.level-id-api/include/EditorIDs.hpp>
+#include <cvolton.level-id-api/EditorIDs.hpp>
 
 using namespace geode::prelude;
 using namespace lc;
@@ -123,12 +123,12 @@ bool ComparisonMenu::init() {
     panel->addChild(level2Input);
 
     m_applyColors = [this]() {
-        ccColor3B buffedColor = { 255, 80, 80 };
-        ccColor3B nerfedColor = { 80, 160, 255 };
-        level1Input->getInputNode()->setLabelPlaceholderColor(isBuffed ? buffedColor : nerfedColor);
-        level1Input->getInputNode()->setLabelNormalColor(isBuffed ? buffedColor : nerfedColor);
-        level2Input->getInputNode()->setLabelPlaceholderColor(isBuffed ? nerfedColor : buffedColor);
-        level2Input->getInputNode()->setLabelNormalColor(isBuffed ? nerfedColor : buffedColor);
+        ccColor4B buffedColor = { 255, 80, 80, 255 };
+        ccColor4B nerfedColor = { 80, 160, 255, 255 };
+        level1Input->setPlaceholderColor(isBuffed ? buffedColor : nerfedColor);
+        level1Input->setTextColor(isBuffed ? buffedColor : nerfedColor);
+        level2Input->setPlaceholderColor(isBuffed ? nerfedColor : buffedColor);
+        level2Input->setTextColor(isBuffed ? nerfedColor : buffedColor);
     };
     m_applyColors();
 
@@ -399,7 +399,7 @@ void ComparisonMenu::onReplaceDisappearingInfo(CCObject*) {
 }
 
 void ComparisonMenu::onPickLevel1(CCObject*) {
-    LevelPickerPopup::create([this](GJGameLevel* level) {
+    ComparisonLevelPickerPopup::create([this](GJGameLevel* level) {
         m_pickedLevel1 = level;
         level1ID = level->m_levelID;
         bool isEditor = level->m_levelType == GJLevelType::Editor;
@@ -416,7 +416,7 @@ void ComparisonMenu::onPickLevel1(CCObject*) {
 }
 
 void ComparisonMenu::onPickLevel2(CCObject*) {
-    LevelPickerPopup::create([this](GJGameLevel* level) {
+    ComparisonLevelPickerPopup::create([this](GJGameLevel* level) {
         m_pickedLevel2 = level;
         level2ID = level->m_levelID;
         bool isEditor = level->m_levelType == GJLevelType::Editor;

@@ -54,8 +54,8 @@ void LevelPickerCell::onSelectBtn(CCObject*) {
 }
 
 
-LevelPickerPopup* LevelPickerPopup::create(std::function<void(GJGameLevel*)> onSelect) {
-    auto ret = new LevelPickerPopup();
+ComparisonLevelPickerPopup* ComparisonLevelPickerPopup::create(std::function<void(GJGameLevel*)> onSelect) {
+    auto ret = new ComparisonLevelPickerPopup();
     if (ret && ret->init()) {
         ret->m_onSelect = onSelect;
         ret->autorelease();
@@ -65,7 +65,7 @@ LevelPickerPopup* LevelPickerPopup::create(std::function<void(GJGameLevel*)> onS
     return nullptr;
 }
 
-bool LevelPickerPopup::init() {
+bool ComparisonLevelPickerPopup::init() {
     if (!Popup::init(380.f, 280.f)) return false;
     this->setTouchEnabled(true);
     this->setKeypadEnabled(true);
@@ -94,7 +94,7 @@ bool LevelPickerPopup::init() {
     m_tabLocal = CCMenuItemSpriteExtra::create(
         ButtonSprite::create("Local"),
         this,
-        menu_selector(LevelPickerPopup::onTabLocal)
+        menu_selector(ComparisonLevelPickerPopup::onTabLocal)
     );
     m_tabLocal->setPosition({ 110.f, 190.f });
     menu->addChild(m_tabLocal);
@@ -102,12 +102,13 @@ bool LevelPickerPopup::init() {
     m_tabSaved = CCMenuItemSpriteExtra::create(
         ButtonSprite::create("Saved"),
         this,
-        menu_selector(LevelPickerPopup::onTabSaved)
+        menu_selector(ComparisonLevelPickerPopup::onTabSaved)
     );
     m_tabSaved->setPosition({ 270.f, 190.f });
     menu->addChild(m_tabSaved);
 
     m_scrollLayer = ScrollLayer::create({ c_listW, c_listH });
+    m_scrollLayer->setAnchorPoint({ 0.f, 0.f });
     m_scrollLayer->setPosition({ 12.f, 7.f });
     this->m_mainLayer->addChild(m_scrollLayer);
 
@@ -116,7 +117,7 @@ bool LevelPickerPopup::init() {
     return true;
 }
 
-std::vector<GJGameLevel*> LevelPickerPopup::getFilteredLevels() {
+std::vector<GJGameLevel*> ComparisonLevelPickerPopup::getFilteredLevels() {
     std::vector<GJGameLevel*> levels;
 
     if (m_showingLocal) {
@@ -148,7 +149,7 @@ std::vector<GJGameLevel*> LevelPickerPopup::getFilteredLevels() {
     return filtered;
 }
 
-void LevelPickerPopup::loadList() {
+void ComparisonLevelPickerPopup::loadList() {
     m_scrollLayer->m_contentLayer->removeAllChildren();
 
     auto levels = getFilteredLevels();
@@ -178,16 +179,16 @@ void LevelPickerPopup::loadList() {
     m_scrollLayer->moveToTop();
 }
 
-void LevelPickerPopup::onTabLocal(CCObject*) {
+void ComparisonLevelPickerPopup::onTabLocal(CCObject*) {
     m_showingLocal = true;
     loadList();
 }
 
-void LevelPickerPopup::onTabSaved(CCObject*) {
+void ComparisonLevelPickerPopup::onTabSaved(CCObject*) {
     m_showingLocal = false;
     loadList();
 }
 
-void LevelPickerPopup::keyBackClicked() {
+void ComparisonLevelPickerPopup::keyBackClicked() {
     this->removeFromParentAndCleanup(true);
 }

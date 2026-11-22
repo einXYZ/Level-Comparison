@@ -1,3 +1,7 @@
+# 1.1.8
+- Updated to 2.2091 and Geode 6.0.0
+- (there is a big update in work, thanks to everyone who messaged me)
+
 # v1.1.7
 - Bugfix Update
 Bugfixes:
