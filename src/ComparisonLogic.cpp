@@ -29,6 +29,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 				std::vector<std::string> tokens = splitString(obj, ",", true);
 				for (int i = 0; i < static_cast<int>(tokens.size()) - 1; i += 2) {
 					int key = stoi(tokens[i]);
+					if (key == 76 || key == 108) continue;
 					if (std::find(groupKeys.begin(), groupKeys.end(), key) != groupKeys.end()) {
 						if (key == 57 || key == 274 || key == 442) {
 							for (std::string& idStr : splitString(tokens[i + 1], ".", true)) {
@@ -65,6 +66,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 	for (int id : enabledModifiers) effectiveObjects.push_back(id);
 
 	int levelIndex = 0;
+	int maxLink = 0;
 
 	for (GJGameLevel *level : levels) {
 		bool isSecondLevel = (levelIndex == 1);
@@ -199,6 +201,9 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						dontEnter = true;
 						if (config.objectOptions.dontEnter) newObjectStr += "67,1,";
 						continue;
+					case 76:
+						newObjectStr += pair[0] + "," + pair[1] + ",";
+						continue;
 					case 96:
 						noGlow = true;
 						if (config.objectOptions.noGlow) newObjectStr += "96,1,";
@@ -213,6 +218,16 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						continue;
 					case 103:
 						continue;
+					case 108: {
+						int link = stoi(pair[1]);
+						if (!isSecondLevel) {
+							if (link > maxLink) maxLink = link;
+						} else if (config.remapGroups && link > 0) {
+							link += maxLink;
+						}
+						newObjectStr += pair[0] + "," + std::to_string(link) + ",";
+						continue;
+					}
 					case 116:
 						noEffects = true;
 						if (config.objectOptions.noEffects) newObjectStr += "116,1,";
@@ -235,7 +250,7 @@ std::string createComparison(GJGameLevel* level1, GJGameLevel* level2, const Com
 						noParticle = true;
 						if (config.objectOptions.noParticle) newObjectStr += "507,1,";
 						continue;
-					case 33: case 71: case 76: case 108:
+					case 33: case 71:
 					case 395: case 448: case 455: case 457:
 					case 516: case 517: case 518: case 519:
 						if (config.remapGroups && isSecondLevel && !groupRemap.empty()) {
