@@ -1,3 +1,8 @@
+# v1.1.9
+- Bugfix Update
+Bugfixes:
+    - Fixed group ID remapping, triggers should now work properly on both versions
+
 # 1.1.8
 - Updated to 2.2091 and Geode 6.0.0
 - (there is a big update in work, thanks to everyone who messaged me)
